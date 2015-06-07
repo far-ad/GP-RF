@@ -6,20 +6,29 @@
 
 #include <cv.h>       // opencv general include file
 #include <ml.h>		  // opencv machine learning include file
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <stdio.h>
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
+#include <vector>
+
+
+#define BOOST_FILESYSTEM_VERSION 3
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#include <boost/filesystem.hpp>
 
 using namespace cv; // OpenCV API is in the C++ "cv" namespace
+namespace fs = ::boost::filesystem;
 
 /******************************************************************************/
 // global definitions (for speed and ease of use)
 //手写体数字识别
 
-#define NUMBER_OF_TRAINING_SAMPLES 60000
+#define NUMBER_OF_TRAINING_SAMPLES 10000
 #define ATTRIBUTES_PER_SAMPLE 784
 #define NUMBER_OF_TESTING_SAMPLES 10000
 
@@ -31,7 +40,32 @@ using namespace cv; // OpenCV API is in the C++ "cv" namespace
 
 // loads the sample database from file (which is a CSV text file)
 
-int read_data_from_csv(const char* filename, Mat data, Mat classes,
+
+
+
+
+
+// return the filenames of all files that have the specified extension
+// in the specified directory and all subdirectories
+void get_image_paths(const fs::path& root, const string& ext, std::vector<fs::path>& ret)
+{
+    if(!fs::exists(root) || !fs::is_directory(root)) return;
+
+    fs::recursive_directory_iterator it(root);
+    fs::recursive_directory_iterator endit;
+
+    while(it != endit)
+    {
+        if(fs::is_regular_file(*it) && it->path().extension() == ext) ret.push_back(it->path().filename());
+        ++it;
+
+    }
+
+}
+
+
+
+int read_data_from_csv(const char* filename, Mat& data, Mat& classes,
                        int n_samples )
 {
     float tmp;
@@ -83,7 +117,7 @@ int reverse_int (int i)
     return((int) ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-int read_mnist_images(const char* filename, Mat data, int n_samples)
+int read_mnist_images(const char* filename, Mat& data, int n_samples)
 {
     std::ifstream file (filename, std::ios::binary);
     
@@ -125,7 +159,7 @@ int read_mnist_images(const char* filename, Mat data, int n_samples)
     return 1;
 }
 
-int read_mnist_labels(const char* filename, Mat classes, int n_samples)
+int read_mnist_labels(const char* filename, Mat& classes, int n_samples)
 {
     std::ifstream file (filename, std::ios::binary);
     
@@ -157,6 +191,30 @@ int read_mnist_labels(const char* filename, Mat classes, int n_samples)
 }
 
 
+int read_image_files(const char* directory, Mat& data, int n_samples) {
+	std::vector<fs::path> image_paths;
+	get_image_paths(directory, "png", image_paths);
+
+	int n_im = 0;
+	for (std::vector<fs::path>::iterator it = image_paths.begin() ; it != image_paths.end(); ++it) {
+		Mat image;
+		image = imread(*it, 0);
+		
+		CV_Assert(image.channels() == 1);
+		
+		MatIterator_<uchar> mit;
+		
+		int n_pixel = 0;
+		for( mit = image.begin<uchar>(); mit != image.end<uchar>(); ++mit) {
+			data.at<float>(n_im, n_pixel++) = (float) *mit;
+		}
+		
+		n_im++;
+	}
+	
+	return 1;
+}
+
 /******************************************************************************/
 
 int main( int argc, char** argv )
@@ -172,7 +230,7 @@ int main( int argc, char** argv )
             CV_MAJOR_VERSION, CV_MINOR_VERSION, CV_SUBMINOR_VERSION);
 	
 	if(argc < 5) {
-		printf("please provide training images, training labels, testing images and testing labels as arguments!!!");
+		printf("please provide training images, training labels, testing images and testing labels as arguments!!!\n");
 		return 1;
 	}
 	

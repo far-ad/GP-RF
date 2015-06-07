@@ -1,12 +1,10 @@
 clear all;
-load('desk_1.mat');
-cd('desk_1');
-
-E = [];
+load('table_small_2.mat');
+cd('table_small_2');
 
 for i = 1:length(bboxes)
     if ~isempty(bboxes{1,i})
-        title = strcat('desk_1_',int2str(i),'.png');
+        title = strcat('table_small_2_',int2str(i),'.png');
         pic = imread(title);
         
         for j = 1:length(bboxes{i})
@@ -18,7 +16,9 @@ for i = 1:length(bboxes)
             label    = bboxes{i}(j).category;
             subpic = imcrop(pic, [xmin ymin width height]);
             
-            cd('desk');
+            cd('table_small');
+            
+            subpic = rgb2gray(subpic);
             
             imwrite(subpic,[label int2str(i) '.png']);
             cd('..');
