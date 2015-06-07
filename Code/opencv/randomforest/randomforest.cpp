@@ -171,6 +171,11 @@ int main( int argc, char** argv )
             CV_VERSION,
             CV_MAJOR_VERSION, CV_MINOR_VERSION, CV_SUBMINOR_VERSION);
 	
+	if(argc < 5) {
+		printf("please provide training images, training labels, testing images and testing labels as arguments!!!");
+		return 1;
+	}
+	
 	//定义训练数据与标签矩阵
     Mat training_data = Mat(NUMBER_OF_TRAINING_SAMPLES, ATTRIBUTES_PER_SAMPLE, CV_32FC1);
     Mat training_classifications = Mat(NUMBER_OF_TRAINING_SAMPLES, 1, CV_32FC1);
@@ -199,10 +204,10 @@ int main( int argc, char** argv )
             read_data_from_csv(argv[2], testing_data, testing_classifications, NUMBER_OF_TESTING_SAMPLES))
     */
     // loading raw data
-    if (read_mnist_images("/usr/prakt/p053/ML/train-images.idx3-ubyte", training_data, NUMBER_OF_TRAINING_SAMPLES) &&
-    		read_mnist_labels("/usr/prakt/p053/ML/train-labels.idx1-ubyte", training_classifications, NUMBER_OF_TRAINING_SAMPLES) &&
-    		read_mnist_images("/usr/prakt/p053/ML/t10k-images.idx3-ubyte", testing_data, NUMBER_OF_TESTING_SAMPLES) &&
-    		read_mnist_labels("/usr/prakt/p053/ML/t10k-labels.idx1-ubyte", testing_classifications, NUMBER_OF_TESTING_SAMPLES))
+    if (read_mnist_images(argv[1], training_data, NUMBER_OF_TRAINING_SAMPLES) &&
+    		read_mnist_labels(argv[2], training_classifications, NUMBER_OF_TRAINING_SAMPLES) &&
+    		read_mnist_images(argv[3], testing_data, NUMBER_OF_TESTING_SAMPLES) &&
+    		read_mnist_labels(argv[4], testing_classifications, NUMBER_OF_TESTING_SAMPLES))
     {
       /********************************步骤1：定义初始化Random Trees的参数******************************/
         float priors[] = {1,1,1,1,1,1,1,1,1,1};  // weights of each classification for classes
