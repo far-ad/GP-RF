@@ -2,8 +2,6 @@ clear all;
 load('desk_1.mat');
 cd('desk_1');
 
-E = [];
-
 for i = 1:length(bboxes)
     if ~isempty(bboxes{1,i})
         title = strcat('desk_1_',int2str(i),'.png');
@@ -16,12 +14,8 @@ for i = 1:length(bboxes)
             height  = bboxes{i}(j).bottom - bboxes{i}(j).top;
             
             label    = bboxes{i}(j).category;
+            
             subpic = imcrop(pic, [xmin ymin width height]);
-            
-            cd('desk');
-            
-            imwrite(subpic,[label int2str(i) '.png']);
-            cd('..');
             
         end
     end
