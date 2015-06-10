@@ -198,7 +198,7 @@ int read_image_files(const char* directory, Mat& data, int n_samples) {
 	int n_im = 0;
 	for (std::vector<fs::path>::iterator it = image_paths.begin() ; it != image_paths.end(); ++it) {
 		Mat image;
-		image = imread(*it, 0);
+		image = imread(it->string(), 0);
 		
 		CV_Assert(image.channels() == 1);
 		
