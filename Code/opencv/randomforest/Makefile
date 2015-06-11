@@ -1,4 +1,4 @@
-LIBS_OPENCV=`pkg-config --libs opencv`\
+LIBS_OPENCV=`pkg-config --libs opencv`
 LIBS_BOOST=-lboost_filesystem -lboost_system
 INCLUDES_OPENCV=-I/usr/include/opencv
 INCLUDES_BOOST=-I/usr/include/boost
