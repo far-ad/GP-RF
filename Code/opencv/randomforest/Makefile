@@ -16,4 +16,4 @@ test_randomforest: randomforest.o test_randomforest.o
 	g++ randomforest.o test_randomforest.o ${LIBS_OPENCV} ${LIBS_BOOST} -o test_randomforest
 
 test_images: randomforest.o test_images.o
-	g++ randomforest.o test_images.o ${LIBS_OPENCV} ${LIBS_BOOST} -o test_ images
+	g++ randomforest.o test_images.o ${LIBS_OPENCV} ${LIBS_BOOST} -o test_images
