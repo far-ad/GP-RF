@@ -1,13 +1,17 @@
 #include <opencv/cv.h>
 #include <opencv/ml.h>
+#include <stdio.h>
 
+#define NUMBER_OF_CLASSES 5
 cv::Mat read_rgbd_data( const char* filename, int n_samples );
 
 int main(int argc, char** argv)
 {
-  cv::Mat training_data, training_labels;
+  cv::Mat training_data, training_labels,testing_data, testing_labels;
   training_data = read_rgbd_data(argv[1],10);
   training_labels = read_rgbd_data(argv[2], 10);
+  testing_data = read_rgbd_data(argv[3],10);
+  testing_labels = read_rgbd_data(argv[4], 10);
  
   // define all the attributes as numerical
   // alternatives are CV_VAR_CATEGORICAL or CV_VAR_ORDERED(=CV_VAR_NUMERICAL)
@@ -37,4 +41,63 @@ int main(int argc, char** argv)
   rtree->train(training_data, CV_ROW_SAMPLE, training_labels,
 	       cv::Mat(), cv::Mat(), var_type, cv::Mat(), params);
   
-}  
+  // perform classifier testing and report results
+  cv::Mat test_sample;
+  int correct_class = 0;
+  int wrong_class = 0;
+  double result;
+  int false_positives [NUMBER_OF_CLASSES] = {0,0,0,0,0};
+  int false_negatives [NUMBER_OF_CLASSES] = {0,0,0,0,0};
+
+  // printf( "\nUsing testing database: %s\n\n", argv[2]);
+
+  for (int tsample = 0; tsample < testing_data.rows; tsample++)
+    {
+
+      // extract a row from the testing matrix
+      test_sample = testing_data.row(tsample);
+      // train on the testing data:
+      // test_sample = training_data.row(tsample);
+      /********************************步骤3：预测*********************************************/
+      result = rtree->predict(test_sample, cv::Mat());
+
+      printf("Testing Sample %i -> class result (digit %d)\n", tsample, (int) result);
+
+      // if the prediction and the (true) testing classification are the same
+      // (N.B. openCV uses a floating point decision tree implementation!)
+      if (fabs(result - testing_labels.at<float>(tsample, 0))
+	  >= FLT_EPSILON)
+	{
+	  // if they differ more than floating point error => wrong class
+	  wrong_class++;
+	  false_positives[(int) result]++;
+	  false_negatives[(int) testing_labels.at<float>(tsample, 0)]++;
+	}
+      else
+	{
+	  // otherwise correct
+	  correct_class++;
+	}
+    }
+
+  printf( // "\nResults on the testing database: %s\n"
+	 "\tCorrect classification: %d (%g%%)\n"
+	 "\tWrong classifications: %d (%g%%)\n",
+	 // argv[2],
+	 correct_class, (double) correct_class*100/testing_data.rows,
+	 wrong_class, (double) wrong_class*100/testing_data.rows);
+
+  for (int i = 0; i < NUMBER_OF_CLASSES; i++)
+    {
+      printf( "\tClass (digit %d) false postives 	%d (%g%%)\n\t                false negatives  %d (%g%%)\n", i,
+	      false_positives[i],
+	      (double) false_positives[i]*100/testing_data.rows,
+	      false_negatives[i],
+	      (double) false_negatives[i]*100/testing_data.rows);
+    }
+        
+  // all matrix memory free by destructors
+
+  // all OK : main returns 0
+  return 0;
+}
