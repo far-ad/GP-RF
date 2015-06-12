@@ -8,8 +8,8 @@ float *read_rgbd_data( const char* filename, int *rows, int *cols, int n_samples
 
   if (!file.is_open())
   {
-    std::cerr << "ERROR: could not open file!" << std::endl;
-    return cv::Mat();
+    std::cerr << "ERROR: could not open file \"" << filename << "\"!" << std::endl;
+    return 0;
   }
 
   int n_size, n_attributes;
@@ -47,6 +47,6 @@ cv::Mat read_rgbd_data_cv( const char* filename, int n_samples=0 )
 	int cols;
 	float *dataset = read_rgbd_data( filename, &rows, &cols, n_samples );
 
-	return cv::Mat( rows, cols, dataset );
+	return cv::Mat( rows, cols, CV_32FC1, dataset );
 }
 

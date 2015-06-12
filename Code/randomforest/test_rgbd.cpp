@@ -3,16 +3,18 @@
 #include <stdio.h>
 
 #define NUMBER_OF_CLASSES 5
-cv::Mat read_rgbd_data( const char* filename, int n_samples );
+cv::Mat read_rgbd_data_cv( const char* filename, int n_samples );
 
 int main(int argc, char** argv)
 {
   cv::Mat training_data, training_labels,testing_data, testing_labels;
-  training_data = read_rgbd_data(argv[1],10);
-  training_labels = read_rgbd_data(argv[2], 10);
-  testing_data = read_rgbd_data(argv[3],10);
-  testing_labels = read_rgbd_data(argv[4], 10);
+  training_data = read_rgbd_data_cv(argv[1], 1000);
+  training_labels = read_rgbd_data_cv(argv[2], 1000);
+  testing_data = read_rgbd_data_cv(argv[3],100);
+  testing_labels = read_rgbd_data_cv(argv[4], 100);
  
+  printf("dataset specs: %d samples with %d features\n", training_data.rows, training_data.cols);
+
   // define all the attributes as numerical
   // alternatives are CV_VAR_CATEGORICAL or CV_VAR_ORDERED(=CV_VAR_NUMERICAL)
   // that can be assigned on a per attribute basis
@@ -61,7 +63,7 @@ int main(int argc, char** argv)
       /********************************步骤3：预测*********************************************/
       result = rtree->predict(test_sample, cv::Mat());
 
-      printf("Testing Sample %i -> class result (digit %d)\n", tsample, (int) result);
+      printf("Testing Sample %i -> classification result: %d\n", tsample, (int) result);
 
       // if the prediction and the (true) testing classification are the same
       // (N.B. openCV uses a floating point decision tree implementation!)
