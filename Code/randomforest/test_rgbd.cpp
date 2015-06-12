@@ -3,15 +3,23 @@
 #include <stdio.h>
 
 #define NUMBER_OF_CLASSES 5
+
 cv::Mat read_rgbd_data_cv( const char* filename, int n_samples );
+
+#define NUMBER_OF_TRAINING_SAMPLES 200
+#define NUMBER_OF_TESTING_SAMPLES 100
+
 
 int main(int argc, char** argv)
 {
+  // std::cout<<FLT_EPSILON<<std::endl; 
   cv::Mat training_data, training_labels,testing_data, testing_labels;
-  training_data = read_rgbd_data_cv(argv[1], 1000);
-  training_labels = read_rgbd_data_cv(argv[2], 1000);
-  testing_data = read_rgbd_data_cv(argv[3],100);
-  testing_labels = read_rgbd_data_cv(argv[4], 100);
+  
+  training_data = read_rgbd_data_cv(argv[1],NUMBER_OF_TRAINING_SAMPLES);
+  training_labels = read_rgbd_data_cv(argv[2], NUMBER_OF_TRAINING_SAMPLES);
+  testing_data = read_rgbd_data_cv(argv[3],NUMBER_OF_TESTING_SAMPLES);
+  testing_labels = read_rgbd_data_cv(argv[4], NUMBER_OF_TESTING_SAMPLES);
+  
  
   printf("dataset specs: %d samples with %d features\n", training_data.rows, training_data.cols);
 
@@ -21,6 +29,7 @@ int main(int argc, char** argv)
 
   cv::Mat var_type = cv::Mat(training_data.cols + 1, 1, CV_8U );
   var_type.setTo(cv::Scalar(CV_VAR_NUMERICAL) ); // all inputs are numerical
+  var_type.at<uchar>(14000, 0) = CV_VAR_CATEGORICAL;
 
   /********************************步骤1：定义初始化Random Trees的参数******************************/
   float priors[] = {1,1,1,1,1};  // weights of each classification for classes
@@ -47,27 +56,28 @@ int main(int argc, char** argv)
   cv::Mat test_sample;
   int correct_class = 0;
   int wrong_class = 0;
-  double result;
+  int result;
+  int label;
   int false_positives [NUMBER_OF_CLASSES] = {0,0,0,0,0};
   int false_negatives [NUMBER_OF_CLASSES] = {0,0,0,0,0};
 
   // printf( "\nUsing testing database: %s\n\n", argv[2]);
 
   for (int tsample = 0; tsample < testing_data.rows; tsample++)
-    {
-
+    {	       
       // extract a row from the testing matrix
       test_sample = testing_data.row(tsample);
       // train on the testing data:
       // test_sample = training_data.row(tsample);
       /********************************步骤3：预测*********************************************/
       result = rtree->predict(test_sample, cv::Mat());
-
-      printf("Testing Sample %i -> classification result: %d\n", tsample, (int) result);
-
+      label = (int) testing_labels.at<float>(tsample, 0);
+      
+      printf("Testing Sample %i -> class result (digit %d) - label (digit %d)\n", tsample, result, label);
+      
       // if the prediction and the (true) testing classification are the same
       // (N.B. openCV uses a floating point decision tree implementation!)
-      if (fabs(result - testing_labels.at<float>(tsample, 0))
+      if (fabs(result - label)
 	  >= FLT_EPSILON)
 	{
 	  // if they differ more than floating point error => wrong class
@@ -101,5 +111,9 @@ int main(int argc, char** argv)
   // all matrix memory free by destructors
 
   // all OK : main returns 0
+  // result = rtree->predict(testing_data.row(79), cv::Mat());
+  // float andi = result - testing_labels.at<float>(79, 0);
+  // // std::cout<<training_labels.row(0).col(0)<<std::endl;
+  // std::cout<<andi<<std::endl;
   return 0;
 }
