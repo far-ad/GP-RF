@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 
   cv::Mat var_type = cv::Mat(training_data.cols + 1, 1, CV_8U );
   var_type.setTo(cv::Scalar(CV_VAR_NUMERICAL) ); // all inputs are numerical
+  var_type.at<uchar>(14000, 0) = CV_VAR_CATEGORICAL;
 
   /********************************步骤1：定义初始化Random Trees的参数******************************/
   float priors[] = {1,1,1,1,1};  // weights of each classification for classes
