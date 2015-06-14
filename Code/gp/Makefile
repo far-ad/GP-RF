@@ -2,10 +2,10 @@ INCL_GP=-I/usr/include/gp-lvm -I/usr/local/include/gp-lvm
 LIBS_GP=-lgp -lgfortran -llapack -lblas
 CC=g++
 
-all: test_gp
+all: newGP_test
 
-test_gp: test_gp.cpp
-	${CC} test_gp.cpp ${INCL_GP} ${LIBS_GP} -o test_gp
+newGP_test: newGP_test.cpp
+	${CC} newGP_test.cpp ${INCL_GP} ${LIBS_GP} -o newGP_test
 
 clean:
-	rm test_gp
+	rm newGP_test

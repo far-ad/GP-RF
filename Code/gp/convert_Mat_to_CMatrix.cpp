@@ -26,3 +26,4 @@ CMatrix *convert_Mat_to_CMatrix(cv::Mat inputDATA, bool reducedSPACE) {
        CMatrix *m2= new CMatrix((unsigned int) B.rows,  (unsigned int) B.cols, array);
        return m2;
 }
+

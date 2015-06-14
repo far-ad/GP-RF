@@ -1,0 +1,32 @@
+#include "load_rgbd.hpp"
+#include "opencv2/gpu/device/type_traits.hpp"
+
+
+
+
+
+//for gp
+
+//loading training and testing sets
+CMatrix *read_rgbd_data_cmat( const char* filename, int n_samples=0 )
+{
+	int rows;
+	int cols;
+	TypeTraits xFLOATS;
+	cv::Mat dataset = cmat_read_rgbd_data( filename, &rows, &cols, n_samples );
+	dataset.getVector();
+	dataset.getConvertElem()
+	dataset.convertTo()
+
+	(doubleArray, TypeTraits<double>::type)
+
+
+	operator CvMat(CV_32F);
+
+
+
+
+	double *
+
+	return new CMatrix(rows, cols, dataset);
+}
