@@ -10,12 +10,13 @@
 #include "writeTextData.hpp"
 #include "cmat_read_rgbd_data.hpp"
 #include "convert_Mat_to_CMatrix.hpp"
+#include "readTextData.hpp"
 #include <fstream>
 
 
 
 int main(int argc, char** argv) {
-	std::cout << "GP running!" << std::endl;
+/*	std::cout << "GP running!" << std::endl;
 
 	CMatrix *conTESTING, *conTRAINING;
 	cv::Mat TESTING, TRAINING;
@@ -24,23 +25,33 @@ int main(int argc, char** argv) {
 
 	TESTING= cmat_read_rgbd_data( filenameTESTING );
 	TRAINING= cmat_read_rgbd_data( filenameTRAINING );
-
-	//100 elements for testing and training
+*/
+	//writing for each 100 elements for testing and training
 	//testing case
-	bool reducedSPACE=true; bool training=false; bool testing=true;
+/*	bool reducedSPACE=true; bool training=false; bool testing=true;
 	writeTextData(TESTING, reducedSPACE, training, testing);
 	//training case
 	reducedSPACE=true; training=true; testing=false;
 	writeTextData(TESTING, reducedSPACE, training, testing);
+	*/
 
 
-	//convert cv::Mat to CMatrix
+
+	//convert all elements from cv::Mat to CMatrix
 /*	bool reducedSPACE=true;
 	conTESTING=convert_Mat_to_CMatrix(TESTING, reducedSPACE);
 	conTRAINING=convert_Mat_to_CMatrix(TRAINING, reducedSPACE);*/
-//	TESTING.size;
 
-//	TRAINING.
+
+	//work only with 100 instances for testing and training
+	//testing
+	bool training=false, testing=true;
+	char *FILEname="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_testing.txt";
+	CMatrix *conTESTING_100=readTextData( training,  testing, FILEname);
+	//training
+	training=true, testing=false;
+	FILEname="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_training.txt";
+	CMatrix *conTRAINING_100=readTextData( training,  testing, FILEname);
 
 
 
