@@ -3,7 +3,9 @@ LIBS_BOOST=-lboost_filesystem -lboost_system
 INCLUDES_OPENCV=-I/usr/include/opencv
 INCLUDES_BOOST=-I/usr/include/boost 
 
-CC=g++
+DBG_FLAGS=-ggdb
+
+CC=g++ ${DBG_FLAGS}
 
 randomforest.o: randomforest.cpp
 	${CC} randomforest.cpp ${INCLUDES_OPENCV} ${INCLUDES_BOOST} -c
