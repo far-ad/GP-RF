@@ -4,8 +4,8 @@ CC=g++
 
 all: newGP_test
 
-newGP_test: newGP_test.cpp
-	${CC} newGP_test.cpp ${INCL_GP} ${LIBS_GP} -o newGP_test
+newGP_test: newGP_test.cpp readTextData.cpp
+	${CC} newGP_test.cpp readTextData.cpp ${INCL_GP} ${LIBS_GP} -o newGP_test
 
 clean:
 	rm newGP_test
