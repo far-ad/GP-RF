@@ -7,26 +7,30 @@
 #define NUMBER_OF_TRAINING_SAMPLES 200
 #define NUMBER_OF_TESTING_SAMPLES 100
 
-cv::Mat read_rgbd_data( const char* filename, int n_samples );
+cv::Mat read_rgbd_data_cv( const char* filename, int n_samples );
 std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
+
 
 int main(int argc, char** argv)
 {
   // std::cout<<FLT_EPSILON<<std::endl; 
   cv::Mat training_data, training_labels,testing_data, testing_labels;
-  training_data = read_rgbd_data(argv[1],NUMBER_OF_TRAINING_SAMPLES);
-  training_labels = read_rgbd_data(argv[2], NUMBER_OF_TRAINING_SAMPLES);
-  testing_data = read_rgbd_data(argv[3],NUMBER_OF_TESTING_SAMPLES);
-  testing_labels = read_rgbd_data(argv[4], NUMBER_OF_TESTING_SAMPLES);
+  
+  training_data = read_rgbd_data_cv(argv[1],NUMBER_OF_TRAINING_SAMPLES);
+  training_labels = read_rgbd_data_cv(argv[2], NUMBER_OF_TRAINING_SAMPLES);
+  testing_data = read_rgbd_data_cv(argv[3],NUMBER_OF_TESTING_SAMPLES);
+  testing_labels = read_rgbd_data_cv(argv[4], NUMBER_OF_TESTING_SAMPLES);
   
  
+  printf("dataset specs: %d samples with %d features\n", training_data.rows, training_data.cols);
+
   // define all the attributes as numerical
   // alternatives are CV_VAR_CATEGORICAL or CV_VAR_ORDERED(=CV_VAR_NUMERICAL)
   // that can be assigned on a per attribute basis
 
   cv::Mat var_type = cv::Mat(training_data.cols + 1, 1, CV_8U );
   var_type.setTo(cv::Scalar(CV_VAR_NUMERICAL) ); // all inputs are numerical
-  var_type.at<uchar>(14000, 0) = CV_VAR_CATEGORICAL;
+  var_type.at<uchar>(training_data.cols, 0) = CV_VAR_CATEGORICAL; // the labels are categorical
 
   /********************************步骤1：定义初始化Random Trees的参数******************************/
   float priors[] = {1,1,1,1,1};  // weights of each classification for classes
@@ -67,8 +71,8 @@ int main(int argc, char** argv)
       // train on the testing data:
       // test_sample = training_data.row(tsample);
       /********************************步骤3：预测*********************************************/
-      result = (int) round(rtree->predict(test_sample, cv::Mat()));
-      label = (int) testing_labels.at<float>(tsample, 0);
+      result = (int) rtree->predict(test_sample, cv::Mat());
+      label  = (int) testing_labels.at<float>(tsample, 0);
       
       CvForestTree* tree = rtree->get_tree(1);
       std::list<const CvDTreeNode*> leaf_list;
