@@ -1,18 +1,16 @@
 #include <gp-lvm/CGp.h>
 #include <gp-lvm/CIvm.h>
-
-#include <iostream>
 #include <gp-lvm/CMatrix.h>
+
 #include <opencv/cv.h>
 
 #include <fstream>
 #include <iostream>
 
 #include "writeTextData.hpp"
+#include "readTextData.hpp"
 #include "cmat_read_rgbd_data.hpp"
 #include "convert_Mat_to_CMatrix.hpp"
-#include "readTextData.hpp"
-#include <fstream>
 
 
 
