@@ -3,7 +3,8 @@
 #include <fstream>
 #include <iostream>
 
-double *read_rgbd_data( const char* filename, int *rows, int *cols, int n_samples=0 ) {
+template <typename T>
+T *read_rgbd_data( const char* filename, int *rows, int *cols, int n_samples=0 ) {
   std::ifstream file( filename );
 
   if (!file.is_open())
@@ -21,8 +22,8 @@ double *read_rgbd_data( const char* filename, int *rows, int *cols, int n_sample
   std::cout << "samples: " << n_samples << std::endl;
   std::cout << "attributes: " << n_attributes << std::endl << std::endl;
 
-  double *dataset = new double[n_samples*n_attributes];
-  float tmp;
+  T *dataset = new T[n_samples*n_attributes];
+  T tmp;
 
   // for each sample in the file
   for(int line = 0; line < n_samples; line++)
@@ -45,8 +46,8 @@ cv::Mat read_rgbd_data_cv( const char* filename, int n_samples=0 )
 {
 	int rows;
 	int cols;
-	double *dataset = read_rgbd_data( filename, &rows, &cols, n_samples );
+	float *dataset = read_rgbd_data<float>( filename, &rows, &cols, n_samples );
 
-	return cv::Mat( rows, cols, CV_64FC1, dataset );
+	return cv::Mat( rows, cols, CV_32FC1, dataset );
 }
 
