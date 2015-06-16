@@ -22,7 +22,7 @@ CMatrix *read_rgbd_data_cmat( const char* filename, int n_samples=0 )
 {
 	int rows;
 	int cols;
-	double *dataset = read_rgbd_data( filename, &rows, &cols, n_samples );
+	double *dataset = read_rgbd_data<double>( filename, &rows, &cols, n_samples );
 
 	return new CMatrix(rows, cols, dataset);
 }
