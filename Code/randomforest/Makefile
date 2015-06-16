@@ -21,7 +21,7 @@ test_images: randomforest.o test_images.o
 	${CC} randomforest.o test_images.o ${LIBS_OPENCV} ${LIBS_BOOST} -o test_images
 
 test_rgbd: test_rgbd.cpp load_rgbd.cpp
-	${CC} load_rgbd.cpp test_rgbd.cpp ${LIBS_OPENCV} -o test_rgbd
+	${CC} load_rgbd.cpp test_rgbd.cpp get_leaf_nodes.cpp ${LIBS_OPENCV} -o test_rgbd
 
 clean:
 	rm *.o test_rgbd test_images test_randomforest

@@ -1,12 +1,14 @@
 #include <opencv/cv.h>
 #include <opencv/ml.h>
 #include <stdio.h>
+#include <list>
 
 #define NUMBER_OF_CLASSES 5
 #define NUMBER_OF_TRAINING_SAMPLES 200
 #define NUMBER_OF_TESTING_SAMPLES 100
 
 cv::Mat read_rgbd_data( const char* filename, int n_samples );
+std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
 
 int main(int argc, char** argv)
 {
@@ -68,7 +70,11 @@ int main(int argc, char** argv)
       result = (int) round(rtree->predict(test_sample, cv::Mat()));
       label = (int) testing_labels.at<float>(tsample, 0);
       
-
+      CvForestTree* tree = rtree->get_tree(1);
+      std::list<const CvDTreeNode*> leaf_list;
+      leaf_list = get_leaf_node( tree );
+	  printf("Number of Leaf nodes: %ld", leaf_list.size());
+      
       printf("Testing Sample %i -> class result (digit %d) - label (digit %d)\n", tsample, result, label);
       
       // if the prediction and the (true) testing classification are the same
