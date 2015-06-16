@@ -1,0 +1,14 @@
+Notes:
+
+randomized greedy selection
+ection 3 then
+contains the derivation of our fast greedy approximation
+assumed density ltering (ADF)
+
+sparse Gaussian process classication (GPC) 
+
+differential entropy score
+) 
+Whilst other selection heuristics can be argued for and utilized,
+it turns out that the differential entropy score together with the simple likelihood
+approximation in (1) leads to an extremely eficient and competitive algorithm
