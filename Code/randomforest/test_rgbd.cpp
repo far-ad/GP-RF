@@ -69,13 +69,15 @@ int main(int argc, char** argv)
       /********************************步骤3：预测*********************************************/
       result = (int) round(rtree->predict(test_sample, cv::Mat()));
       label = (int) testing_labels.at<float>(tsample, 0);
-      
+
+      printf("Testing Sample %i -> class result (digit %d) - label (digit %d)\n", tsample, result, label);
+
+      // get the leaf nodes of the first tree in the forest
       CvForestTree* tree = rtree->get_tree(1);
       std::list<const CvDTreeNode*> leaf_list;
       leaf_list = get_leaf_node( tree );
-	  printf("Number of Leaf nodes: %ld", leaf_list.size());
-      
-      printf("Testing Sample %i -> class result (digit %d) - label (digit %d)\n", tsample, result, label);
+      printf("Number of Leaf nodes: %ld", leaf_list.size());
+     
       
       // if the prediction and the (true) testing classification are the same
       // (N.B. openCV uses a floating point decision tree implementation!)
