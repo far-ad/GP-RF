@@ -42,12 +42,3 @@ T *read_rgbd_data( const char* filename, int *rows, int *cols, int n_samples=0 )
   return dataset; // all OK
 }
 
-cv::Mat read_rgbd_data_cv( const char* filename, int n_samples=0 )
-{
-	int rows;
-	int cols;
-	float *dataset = read_rgbd_data<float>( filename, &rows, &cols, n_samples );
-
-	return cv::Mat( rows, cols, CV_32FC1, dataset );
-}
-

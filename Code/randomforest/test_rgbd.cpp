@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <list>
 
+#include "../dataset/load_rgbd_cv.h"
+
 #define NUMBER_OF_CLASSES 5
 #define NUMBER_OF_TRAINING_SAMPLES 200
 #define NUMBER_OF_TESTING_SAMPLES 100
 
-cv::Mat read_rgbd_data_cv( const char* filename, int n_samples );
 std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
 
 
