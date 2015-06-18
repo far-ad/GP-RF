@@ -1,17 +1,21 @@
 #include <gp-lvm/CGp.h>
 #include <gp-lvm/CIvm.h>
+
+#include <iostream>
 #include <gp-lvm/CMatrix.h>
-
 #include <opencv/cv.h>
-
+#include <gp-lvm/ivm.h>
 #include <fstream>
 #include <iostream>
 
 #include "writeTextData.hpp"
-#include "readTextData.hpp"
 #include "cmat_read_rgbd_data.hpp"
 #include "convert_Mat_to_CMatrix.hpp"
+#include "readTextData.hpp"
+#include <fstream>
 
+
+#include "gp-lvm/COptimisable.h"
 
 
 int main(int argc, char** argv) {
@@ -67,6 +71,8 @@ int main(int argc, char** argv) {
 	char *FILEname_labels="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_testing_labels.txt";
 	CMatrix *conTESTING_100=readTextData( training,  testing, FILEname);
 	CMatrix *conTESTING_100_labels=readTextData( training,  testing, FILEname_labels);
+
+
 	//training
 	training=true, testing=false;
 	FILEname="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_training.txt";
@@ -74,14 +80,10 @@ int main(int argc, char** argv) {
 	CMatrix *conTRAINING_100=readTextData( training,  testing, FILEname);
 	CMatrix *conTRAINING_100_labels=readTextData( training,  testing, FILEname_labels);
 
-	  std::cout << "conTRAINING_100 number of rows : " << conTRAINING_100->getRows();
-	  std::cout << "\n "  << endl;
-	  std::cout << "conTRAINING_100 number of cols : " << conTRAINING_100->getCols();
-	  std::cout << "\n "  << endl;
-	  std::cout << "conTRAINING_100_labels number of rows : " << conTRAINING_100_labels->getRows();
-	  std::cout << "\n "  << endl;
-	  std::cout << "conTRAINING_100_labels number of cols : " << conTRAINING_100_labels->getCols();
-	  std::cout << "\n "  << endl;
+	  std::cout << "\nconTRAINING_100 number of rows : " << conTRAINING_100->getRows();
+	  std::cout << "\nconTRAINING_100 number of cols : " << conTRAINING_100->getCols();
+	  std::cout << "\nconTRAINING_100_labels number of rows : " << conTRAINING_100_labels->getRows();
+	  std::cout << "\nconTRAINING_100_labels number of cols : " << conTRAINING_100_labels->getCols();
 
 	//  CIvm(CMatrix* inData, CMatrix* targetData,
    //   CKern* kernel, CNoise* noiseModel, int selectCrit,
@@ -92,19 +94,119 @@ int main(int argc, char** argv) {
 //	CRbfKern  *Kernel_calculated = new CRbfKern( *conTRAINING_100 );
 
 	//initilizing rbf kernel
-	CRbfKern  *Kernel_rbf= new CRbfKern( );
+	  conTRAINING_100->trans();
+	CRbfKern  *Kernel_rbf= new CRbfKern(14000  );
+//	Kernel_rbf->compute(*conTRAINING_100, *conTRAINING_100);
+//	Kernel_rbf->addPriorGrad(*conTRAINING_100);
+	Kernel_rbf->setVariance(1.3);
+	Kernel_rbf->setInverseWidth(0.3);
+	std::cout << "\n Kernel rbf CurrentVersion : " << Kernel_rbf->getCurrentVersion();
+	std::cout << "\n Kernel rbf BaseType : " << Kernel_rbf->getBaseType();
+	std::cout << "\n Kernel rbf InputDim : " << Kernel_rbf->getInputDim();
+	std::cout << "\n Kernel rbf getInverseWidth : " << Kernel_rbf->getInverseWidth();
+	std::cout << "\n Kernel rbf getLengthScale : " << Kernel_rbf->getLengthScale();
+	std::cout << "\n Kernel rbf getMinCompatVersion : " << Kernel_rbf->getMinCompatVersion();
+	std::cout << "\n Kernel rbf getName : " << Kernel_rbf->getName();
+	std::cout << "\n Kernel rbf getNumParams : " << Kernel_rbf->getNumParams();
+	std::cout << "\n Kernel rbf getNumPriors : " << Kernel_rbf->getNumPriors();
+	std::cout << "\n Kernel rbf getNumTransforms : " << Kernel_rbf->getNumTransforms();
+	std::cout << "\n Kernel rbf getVariance : " << Kernel_rbf->getVariance();
+	std::cout << "\n Kernel rbf getWhite : " << Kernel_rbf->getWhite();
+
+
 	//initilizing white noise for classification
-	CProbitNoise *noiseModel_classification= new CProbitNoise();
+	CProbitNoise *noiseModel_classification= new CProbitNoise(conTRAINING_100_labels);//must be initilized conTRAINING_100
+
+
+//	noiseModel_classification->setDefaultOptimiser(2);
+
+	noiseModel_classification->setVarSigmas(2);
+	noiseModel_classification->setVerbosity(1);
+	std::cout << "\n noiseModel_classification rbf getVerbosity : " << noiseModel_classification->getVerbosity();
+	std::cout << "\n noiseModel_classification rbf getVarSigma : " << noiseModel_classification->getVarSigma(1,1);
+//	std::cout << "\n noiseModel_classification rbf getVarSigma : " << noiseModel_classification->setLearnRate(0.3);
+
+	noiseModel_classification->setDefaultOptimiser(2);
+	noiseModel_classification->setFuncEvalTerminate(true);
+	noiseModel_classification->setLearnRate(0.3);
+	noiseModel_classification->setMaxFuncEvals(2);
+	noiseModel_classification->setMomentum(0.5);
+	noiseModel_classification->setMus(1.5);
+	noiseModel_classification->setObjectiveTol(0.5);
+	noiseModel_classification->setParam(0.5,1);
+	noiseModel_classification->setParamTol(0.5);
+	noiseModel_classification->setVarSigmas(2);
+
+	std::cout << "\n noiseModel_classification getDefaultOptimiser : " << noiseModel_classification->getDefaultOptimiser();
+	std::cout << "\n noiseModel_classification getMaxFuncEvals : " << noiseModel_classification->getMaxFuncEvals();//getFuncEvalTerminate();
+	std::cout << "\n noiseModel_classification getLearnRate : " << noiseModel_classification->getLearnRate();
+	std::cout << "\n noiseModel_classification getMaxFuncEvals : " << noiseModel_classification->getMaxFuncEvals();
+	std::cout << "\n noiseModel_classification getMomentum : " << noiseModel_classification->getMomentum();
+	std::cout << "\n noiseModel_classification getMu : " << noiseModel_classification->getMu(1,1);//getMus();
+	std::cout << "\n noiseModel_classification getObjectiveTol : " << 	noiseModel_classification->getObjectiveTol();
+	std::cout << "\n noiseModel_classification getOptNumParams : " << noiseModel_classification->getOptNumParams();//getParam();
+	std::cout << "\n noiseModel_classification getParamTol : " << noiseModel_classification->getParamTol();
+	std::cout << "\n noiseModel_classification getVarSigma : " << noiseModel_classification->getVarSigma(1,1);//getVarSigmas(2);
+
+
+
+
+
+
+
+
+
+
+//	std::cout << "\n Nois computeObjectiveVal : " << noiseModel_classification->computeObjectiveVal();
+
+
+
+
+//	std::cout << "\n Nois setVerbosity : " << noiseModel_classification->setVerbosity(2);
+
+
 
 	//IVM classifier
-	unsigned int dVal=1; int verbos=1; int selectCrit=1;
-	CIvm *gp_classifier= new CIvm ();
+	unsigned int dVal=1; int verbos=2; int selectCrit=0;
+
+
+
+
+
+//	CIvm *gp_classifier= new CIvm ();
 //	CGp *new_gp= new CGp();
-	/*
-	CIvm *gp_classifier= new CIvm (conTRAINING_100, conTRAINING_100_labels,
-			Kernel_rbf, noiseModel_classification,
-			selectCrit, dVal, verbos);
-			*/
+
+
+
+	CMatrix* inData= new CMatrix(); CMatrix* targetData= new CMatrix();
+	unsigned int inDim=100;
+	CRbfKern kernel=CRbfKern(100);
+	CProbitNoise noiseModel=CProbitNoise();
+
+//gplvm
+//
+//	CIvm gp_classifier= new CIvm (inData, targetData,
+//			kernel, noiseModel, selectCrit,
+//			dVal, verbos);
+
+
+	CIvm *gp_classifier= new CIvm ();
+	gp_classifier->setDefaultOptimiser(2);
+	gp_classifier->setEpUpdate(true);
+	gp_classifier->setInputDim(1400);
+	gp_classifier->setMomentum(1);
+	gp_classifier->setVerbosity(2);
+	gp_classifier->setOutputDim(100);
+
+
+//	(conTRAINING_100, conTRAINING_100_labels,
+//				Kernel_rbf, noiseModel_classification,
+//				selectCrit, dVal, verbos);
+
+//	gp_classifier->init();
+
+//	std::cout << "conTRAINING_100_labels number of cols : " << gp_classifier->logLikelihood();
+
 	/*, int selectCrit,
 	   unsigned int dVal, int verbos=2);
 */
@@ -122,7 +224,7 @@ int main(int argc, char** argv) {
 
 
 
-	std::cout << "done";
+	std::cout << "\n done";
 
 
 	return 0;

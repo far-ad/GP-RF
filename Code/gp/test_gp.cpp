@@ -28,13 +28,7 @@ int main(int argc, char** argv) {
 //	TESTING.size;
 
 //	TRAINING.
-
-
-
-
 // CGp(CKern* kernel, CNoise* nois, CMatrix* Xin, int approxType=FTC, unsigned int actSetSize=0, int verbos=2);
-
-
 
 	CGp *gp;
 	gp= new CGp();
@@ -44,3 +38,12 @@ int main(int argc, char** argv) {
 
 }
 
+//loading training and testing sets
+CMatrix *read_rgbd_data_cmat( const char* filename, int n_samples=0 )
+{
+	int rows;
+	int cols;
+	double *dataset = read_rgbd_data<double>( filename, &rows, &cols, n_samples );
+
+	return new CMatrix(rows, cols, dataset);
+}

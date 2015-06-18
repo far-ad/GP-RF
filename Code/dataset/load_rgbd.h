@@ -3,15 +3,14 @@
 #include <fstream>
 #include <iostream>
 
-
-cv::Mat read_rgbd_data( const char* filename, int n_samples=0 )
-{
+template <typename T>
+T *read_rgbd_data( const char* filename, int *rows, int *cols, int n_samples=0 ) {
   std::ifstream file( filename );
 
   if (!file.is_open())
   {
-    std::cerr << "ERROR: could not open file!" << std::endl;
-    return cv::Mat();
+    std::cerr << "ERROR: could not open file \"" << filename << "\"!" << std::endl;
+    return 0;
   }
 
   int n_size, n_attributes;
@@ -23,20 +22,23 @@ cv::Mat read_rgbd_data( const char* filename, int n_samples=0 )
   std::cout << "samples: " << n_samples << std::endl;
   std::cout << "attributes: " << n_attributes << std::endl << std::endl;
 
-  cv::Mat dataset = cv::Mat(n_samples, n_attributes, CV_32FC1);
-  float tmp;
+  T *dataset = new T[n_samples*n_attributes];
+  T tmp;
 
   // for each sample in the file
-
   for(int line = 0; line < n_samples; line++)
     {
       // for each attribute on the line in the file
       for(int attribute = 0; attribute < n_attributes; attribute++)
         {
-	  file >> tmp;
-	  dataset.at<float>(line, attribute) = tmp;
+	  file >> dataset[line*n_attributes + attribute];
         }
     }
 
+  // return the dimension of the dataset
+  *rows = n_samples;
+  *cols = n_attributes;
+
   return dataset; // all OK
 }
+
