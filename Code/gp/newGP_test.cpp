@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 
 
 	//initilizing white noise for classification
-	CProbitNoise *noiseModel_classification= new CProbitNoise(conTRAINING_100);//must be initilized conTRAINING_100
+	CProbitNoise *noiseModel_classification= new CProbitNoise(conTRAINING_100_labels);//must be initilized conTRAINING_100
 
 
 //	noiseModel_classification->setDefaultOptimiser(2);
@@ -176,16 +176,33 @@ int main(int argc, char** argv) {
 //	CIvm *gp_classifier= new CIvm ();
 //	CGp *new_gp= new CGp();
 
-	conTRAINING_100
 
 
+	CMatrix* inData= new CMatrix(); CMatrix* targetData= new CMatrix();
+	unsigned int inDim=100;
+	CRbfKern kernel=CRbfKern(100);
+	CProbitNoise noiseModel=CProbitNoise();
+
+//gplvm
+//
+//	CIvm gp_classifier= new CIvm (inData, targetData,
+//			kernel, noiseModel, selectCrit,
+//			dVal, verbos);
 
 
+	CIvm *gp_classifier= new CIvm ();
+	gp_classifier->setDefaultOptimiser(2);
+	gp_classifier->setEpUpdate(true);
+	gp_classifier->setInputDim(1400);
+	gp_classifier->setMomentum(1);
+	gp_classifier->setVerbosity(2);
+	gp_classifier->setOutputDim(100);
 
 
-	CIvm *gp_classifier= new CIvm (conTRAINING_100, conTRAINING_100_labels,
-			Kernel_rbf, noiseModel_classification,
-			selectCrit, dVal, verbos);
+//	(conTRAINING_100, conTRAINING_100_labels,
+//				Kernel_rbf, noiseModel_classification,
+//				selectCrit, dVal, verbos);
+
 //	gp_classifier->init();
 
 //	std::cout << "conTRAINING_100_labels number of cols : " << gp_classifier->logLikelihood();
