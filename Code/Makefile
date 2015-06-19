@@ -13,10 +13,13 @@ CC=g++ ${DBG_FLAGS}
 
 all: gp rf
 
-gp: gp/newGP_test
+gp: gp/newGP_test gp/test_gp
 
-gp/newGP_test: gp/newGP_test.cpp gp/readTextData.cpp
-	${CC} gp/newGP_test.cpp gp/readTextData.cpp ${INCL_GP} ${LIBS_GP} -o gp/newGP_test
+gp/test_gp: gp/test_gp.o gp/read_rgbd_data.o
+	${CC} gp/read_rgbd_data.o gp/test_gp.o ${LIBS_GP} -o gp/test_gp
+
+gp/newGP_test: gp/newGP_test.cpp gp/read_rgbd_data.cpp
+	${CC} gp/newGP_test.cpp gp/read_rgbd_data.cpp ${INCL_GP} ${LIBS_GP} -o gp/newGP_test
 
 rf: randomforest/test_randomforest randomforest/test_images randomforest/test_rgbd
 
