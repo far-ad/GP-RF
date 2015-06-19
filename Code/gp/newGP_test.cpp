@@ -33,10 +33,10 @@ int main(int argc, char** argv) {
 
 //	CMatrix *conTESTING, *conTESTING_labels, *conTRAINING, *conTRAINING_labels;
 //	cv::Mat TESTING, TRAINING,TESTING_labels, TRAINING_labels;
-	const char* filenameTESTING= "/home/jack/Gaussian_Process/GPc/dataset/rgbdData/rgbdDataset-test.data";
-	const char* filenameTRAINING= "/home/jack/Gaussian_Process/GPc/dataset/rgbdData/rgbdDataset-train.data";
-	const char* filenameTESTING_labels= "/home/jack/Gaussian_Process/GPc/dataset/rgbdData/rgbdDataset-test.labels";
-	const char* filenameTRAINING_labels= "/home/jack/Gaussian_Process/GPc/dataset/rgbdData/rgbdDataset-train.labels";
+	const char* filenameTESTING= argv[1];
+	const char* filenameTRAINING= argv[2];
+	const char* filenameTESTING_labels= argv[3];
+	const char* filenameTRAINING_labels= argv[4];
 //	TESTING= cmat_read_rgbd_data( filenameTESTING );
 //	TRAINING= cmat_read_rgbd_data( filenameTRAINING );
 //	TESTING_labels= cmat_read_rgbd_data( filenameTESTING_labels );
