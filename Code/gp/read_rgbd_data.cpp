@@ -1,9 +1,18 @@
-#include <opencv/cv.h>
+#include "read_rgbd_data.hpp"
+#include "../dataset/load_rgbd.h"
 
-#include <fstream>
-#include <iostream>
+//loading training and testing sets
+CMatrix *read_rgbd_data_cmat( const char* filename, int n_samples )
+{
+	int rows;
+	int cols;
+	double *dataset = read_rgbd_data<double>( filename, &rows, &cols, n_samples );
+
+	return new CMatrix(rows, cols, dataset);
+}
 
 //for rf
+/*
 cv::Mat read_rgbd_data( const char* filename, int n_samples=0 )
 {
   std::ifstream file( filename );
@@ -40,7 +49,7 @@ cv::Mat read_rgbd_data( const char* filename, int n_samples=0 )
 
   return dataset; // all OK
 }
-
+*/
 
 
 
