@@ -7,7 +7,7 @@
 
 #define NUMBER_OF_CLASSES 5
 #define NUMBER_OF_TRAINING_SAMPLES 200
-#define NUMBER_OF_TESTING_SAMPLES 100
+#define NUMBER_OF_TESTING_SAMPLES 1000
 
 std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
 
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
       CvForestTree* tree = rtree->get_tree(1);
       std::list<const CvDTreeNode*> leaf_list;
       leaf_list = get_leaf_node( tree );
-      printf("Number of Leaf nodes: %ld", leaf_list.size());
+      printf("Number of Leaf nodes: %ld\n", leaf_list.size());
      
       
       // if the prediction and the (true) testing classification are the same
