@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
 //
 ////	noiseModel_classification->setDefaultOptimiser(2);
 //
-//	noiseModel_classification->setVarSigmas(2);
+	noiseModel_classification->setVarSigmas(2);
 //	noiseModel_classification->setVerbosity(1);
 //	std::cout << "\n noiseModel_classification rbf getVerbosity : " << noiseModel_classification->getVerbosity();
 //	std::cout << "\n noiseModel_classification rbf getVarSigma : " << noiseModel_classification->getVarSigma(1,1);
@@ -207,13 +207,14 @@ int main(int argc, char** argv) {
 ////	CProbitNoise noiseModel=CProbitNoise();
 ////	CMatrix *OutputMatrix=new CMatrix();
 ////gplvm
-	int selectCrit=10;
+	int selectCrit=CIvm::ENTROPY;
+	int select_Active_Points=50;
 	CIvm* gp_classifier= new CIvm (conTRAINING_100, conTRAINING_100_labels,
 			Kernel_rbf,	noiseModel_classification, selectCrit,
-			1,
-			1);
+			select_Active_Points,//
+			3);
 
-//	gp_classifier->optimise(10,10,10);
+	gp_classifier->optimise(10,10,10);
 
 //	std::cout << "\n logLikelihood : " << gp_classifier->logLikelihood() << endl;
 
