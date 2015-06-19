@@ -33,10 +33,15 @@ int main(int argc, char** argv) {
 
 //	CMatrix *conTESTING, *conTESTING_labels, *conTRAINING, *conTRAINING_labels;
 //	cv::Mat TESTING, TRAINING,TESTING_labels, TRAINING_labels;
-	const char* filenameTESTING= argv[1];
-	const char* filenameTRAINING= argv[2];
-	const char* filenameTESTING_labels= argv[3];
-	const char* filenameTRAINING_labels= argv[4];
+
+	const char* filenameTRAINING= argv[1];
+	const char* filenameTRAINING_labels= argv[2];
+	const char* filenameTESTING= argv[3];
+	const char* filenameTESTING_labels= argv[4];
+
+
+
+
 //	TESTING= cmat_read_rgbd_data( filenameTESTING );
 //	TRAINING= cmat_read_rgbd_data( filenameTRAINING );
 //	TESTING_labels= cmat_read_rgbd_data( filenameTESTING_labels );
@@ -208,7 +213,7 @@ int main(int argc, char** argv) {
 			1,
 			1);
 
-	gp_classifier->optimise(10,10,10);
+//	gp_classifier->optimise(10,10,10);
 
 //	std::cout << "\n logLikelihood : " << gp_classifier->logLikelihood() << endl;
 
