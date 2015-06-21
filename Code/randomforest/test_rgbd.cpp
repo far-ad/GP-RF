@@ -11,10 +11,10 @@
 
 std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
 
-struct leaf_samples{
+typedef struct {
   CvDTreeNode* leaf;
   std::list<int> indices; 
-};
+} leaf_samples;
   
 int main(int argc, char** argv)
 {
@@ -162,7 +162,11 @@ int main(int argc, char** argv)
     }
   printf("\n Size of node_indices: %d\n", node_indices.size()); 
 
-        
+  
+  const double* p = testing_data.ptr<double>(0);
+  std::vector<double> vec(p, p + testing_data.cols);
+
+  
   // all matrix memory free by destructors
 
   // all OK : main returns 0
