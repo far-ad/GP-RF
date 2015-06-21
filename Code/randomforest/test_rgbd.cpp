@@ -14,7 +14,7 @@ std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
 struct leaf_samples{
   CvDTreeNode* leaf;
   std::list<int> indices; 
-}leaf_sample;
+};
   
 int main(int argc, char** argv)
 {
@@ -135,28 +135,32 @@ int main(int argc, char** argv)
     }
 
   std::list<leaf_samples> node_indices;
-  for (int i = 0; i < training_data.cols; i++) 
+  for (int i = 0; i < training_data.rows; i++) 
     {
       CvDTreeNode* leaf_node = leaf_nodes[i];
 
-      if (leaf_node == NULL)
-	continue;
+      if (leaf_node != NULL) {
+	leaf_samples leaf_sample;
+	leaf_sample.leaf = leaf_node;
+	leaf_sample.indices.push_front(i);
 
-      leaf_sample.leaf = leaf_node;
-      leaf_sample.indices.insert(leaf_sample.indices.begin(),i);
 
-      for (int j=i+1; j < training_data.cols; j++) 
-	{
-	  if (leaf_node == leaf_nodes[j]) {
-            leaf_sample.indices.insert(leaf_sample.indices.begin(),j);
-	    leaf_nodes[j] = NULL;
+	printf("\n Value of leaf: %f\n", leaf_node->value);
+	printf(", %lu", i);
+	for (int j=i+1; j < training_data.rows; j++) 
+	  {
+	    if (leaf_node == leaf_nodes[j]) {
+	      leaf_sample.indices.push_front(j);
+	      printf(", %lu", j);
+	      leaf_nodes[j] = NULL;
+	    }
 	  }
-	}
 
-      node_indices.insert(node_indices.begin(),leaf_sample);
-      printf("the size of node_indices: %d\n", node_indices.size());
-      printf("the first leaf node depth:%d\n", node_indices.front().leaf->depth);
+	node_indices.push_front(leaf_sample);      
+      }
+      
     }
+  printf("\n Size of node_indices: %d\n", node_indices.size()); 
 
         
   // all matrix memory free by destructors
