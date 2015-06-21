@@ -1,31 +1,38 @@
 #include <gp-lvm/CGp.h>
 #include <gp-lvm/CIvm.h>
-#include "read_rgbd_data.hpp"
-#include <iostream>
 #include <gp-lvm/CMatrix.h>
-#include <opencv/cv.h>
-#include <gp-lvm/ivm.h>
+
+#include "read_rgbd_data.hpp"
+
 #include <fstream>
 #include <iostream>
-
-#include "writeTextData.hpp"
-#include "cmat_read_rgbd_data.hpp"
-#include "convert_Mat_to_CMatrix.hpp"
-#include "readTextData.hpp"
-#include <fstream>
+#include <cmath> // for 'abs(double)'
 
 
-#include "gp-lvm/COptimisable.h"
+/**
+ * Return a new label matrix that takes one label out of the others.
+ *
+ * The result will be a new matrix that has a 1 at every place where the given label occurred, otherwise -1.
+ *
+ * @param labels_matrix the matrix containing the original labels
+ * @param filtered_label the label to pick
+ * @return the new label matrix
+ */
+CMatrix *one_out_of_many(CMatrix *labels_matrix, double filtered_label)
+{
+	CMatrix *result = new CMatrix(*labels_matrix);
 
-//CMatrix *read_rgbd_data_cmat2( const char* filename, int n_samples=0 )
-//{
-//	int rows;
-//	int cols;
-//	double *dataset = read_rgbd_data<double>( filename, &rows, &cols, n_samples );
-//
-//	return new CMatrix(rows, cols, dataset);
-//}
-
+	for(int i=0; i<result->getRows(); i++) {
+		for(int j=0; j<result->getCols(); j++) {
+			if(abs(result->getVal(i,j) - filtered_label) <= FLT_EPSILON)
+				result->setVal(1.0,i,j);
+			else
+				result->setVal(-1.0,i,j);
+		}
+	}
+	
+	return result;
+}
 
 
 int main(int argc, char** argv) {
@@ -76,26 +83,17 @@ int main(int argc, char** argv) {
 	conTRAINING=convert_Mat_to_CMatrix(TRAINING, reducedSPACE);
 	conTRAINING_labels=convert_Mat_to_CMatrix(TRAINING_labels, reducedSPACE);*/
 
+	// work only with #n_data instances for testing and training and train only on label 2
+	int n_data = 40;
+	int label = 2;
 
-	//work only with 100 instances for testing and training
-	//testing
+	// testing data
+	CMatrix *conTESTING_100=read_rgbd_data_cmat( filenameTESTING, n_data);
+	CMatrix *conTESTING_100_labels= one_out_of_many( read_rgbd_data_cmat( filenameTESTING_labels, n_data), label);
 
-
-//	bool training=false, testing=true;
-//	char *FILEname="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_testing.txt";
-//	char *FILEname_labels="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_testing_labels.txt";
-	CMatrix *conTESTING_100=read_rgbd_data_cmat( filenameTESTING,  100);
-	CMatrix *conTESTING_100_labels=read_rgbd_data_cmat( filenameTESTING_labels,  100);
-
-
-
-//
-//	//training
-//	training=true, testing=false;
-//	FILEname="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_training.txt";
-//	FILEname_labels="/home/jack/Desktop/Project/Final/GP-RF/Code/gp/100_elements_for_training_labels.txt";
-	CMatrix *conTRAINING_100=read_rgbd_data_cmat( filenameTRAINING,  100);
-	CMatrix *conTRAINING_100_labels=read_rgbd_data_cmat( filenameTRAINING_labels,  100);
+	// training data
+	CMatrix *conTRAINING_100=read_rgbd_data_cmat( filenameTRAINING, n_data);
+	CMatrix *conTRAINING_100_labels= one_out_of_many(read_rgbd_data_cmat( filenameTRAINING_labels, n_data), label);
 //
 //	  std::cout << "\nconTRAINING_100 number of rows : " << conTRAINING_100->getRows();
 //	  std::cout << "\nconTRAINING_100 number of cols : " << conTRAINING_100->getCols();
@@ -109,7 +107,7 @@ int main(int argc, char** argv) {
 
 //calculation of the Kernel; selecting RBF Kernel
 	CRbfKern  *Kernel_rbf = new CRbfKern( *conTRAINING_100 );
-	std::cout << "\n Kernel_calculated value : " << Kernel_rbf->getInputDim() << endl;
+	std::cout << "Kernel_calculated value : " << Kernel_rbf->getInputDim() << endl;
 	CDist* prior= new CGammaDist();
 	prior->setParam(1.0,0);
 	prior->setParam(1.0,1);
@@ -135,6 +133,7 @@ int main(int argc, char** argv) {
 	std::cout << "\n Kernel rbf getNumTransforms : " << Kernel_rbf->getNumTransforms();
 	std::cout << "\n Kernel rbf getVariance : " << Kernel_rbf->getVariance();
 	std::cout << "\n Kernel rbf getWhite : " << Kernel_rbf->getWhite();
+	std::cout << endl;
 //
 //
 //	//initilizing white noise for classification
@@ -143,7 +142,6 @@ int main(int argc, char** argv) {
 //
 ////	noiseModel_classification->setDefaultOptimiser(2);
 //
-	noiseModel_classification->setVarSigmas(2);
 //	noiseModel_classification->setVerbosity(1);
 //	std::cout << "\n noiseModel_classification rbf getVerbosity : " << noiseModel_classification->getVerbosity();
 //	std::cout << "\n noiseModel_classification rbf getVarSigma : " << noiseModel_classification->getVarSigma(1,1);
@@ -208,28 +206,29 @@ int main(int argc, char** argv) {
 ////	CMatrix *OutputMatrix=new CMatrix();
 ////gplvm
 	int selectCrit=CIvm::ENTROPY;
-	int select_Active_Points=50;
+	int select_Active_Points=20;
+
 	CIvm* gp_classifier= new CIvm (conTRAINING_100, conTRAINING_100_labels,
 			Kernel_rbf,	noiseModel_classification, selectCrit,
-			select_Active_Points,//
-			3);
+			select_Active_Points, 3);
 
-	gp_classifier->optimise(10,10,10);
+	std::cout << std::endl;
+	std::cout << "==> optimizing model..." << std::endl;
+
+	// optimise resets the values of the noise model and optimizes them for the given data
+	gp_classifier->optimise();
+
+	std::cout << std::endl;
+	std::cout << "==> finished optimization" << std::endl;
 
 //	std::cout << "\n logLikelihood : " << gp_classifier->logLikelihood() << endl;
 
-	//testing the test data
-//	gp_classifier->test(*conTESTING_100_labels,*conTESTING_100);
+	// test model using the test data
+	std::cout << std::endl;
+	std::cout << "==> testing model" << std::endl;
+	gp_classifier->test(*conTESTING_100_labels, *conTESTING_100);
 
-//			//dVal, verbos);
-//
-//
-//
-//
-//
-//
 ////	CMatrix *Pout=new CMatrix(100,14000);Pout->trans();
-////	CMatrix *
 ////	CIvm gp_classifier=CIvm();conTRAINING_100->trans();
 ////	gp_classifier.setVerbosity(3);
 ////	gp_classifier.init();
@@ -260,8 +259,6 @@ int main(int argc, char** argv) {
 ////				selectCrit, dVal, verbos);
 //
 ////	gp_classifier->init();
-
-	std::cout << "conTRAINING_100 value : " << conTRAINING_100->getVal(5,5);
 
 //	/*, int selectCrit,
 //	   unsigned int dVal, int verbos=2);
@@ -298,10 +295,7 @@ int main(int argc, char** argv) {
 //	gp_classifier= new CIvm();
 //	gp->X_u;
 
-
-
-	std::cout << "\n done";
-
+	std::cout << "done" << std::endl;
 
 	return 0;
 
