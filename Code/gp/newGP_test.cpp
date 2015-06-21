@@ -83,8 +83,8 @@ int main(int argc, char** argv) {
 	conTRAINING=convert_Mat_to_CMatrix(TRAINING, reducedSPACE);
 	conTRAINING_labels=convert_Mat_to_CMatrix(TRAINING_labels, reducedSPACE);*/
 
-	// work only with 100 instances for testing and training and train only on label 2
-	int n_data = 100;
+	// work only with #n_data instances for testing and training and train only on label 2
+	int n_data = 40;
 	int label = 2;
 
 	// testing data
@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
 ////	CMatrix *OutputMatrix=new CMatrix();
 ////gplvm
 	int selectCrit=CIvm::ENTROPY;
-	int select_Active_Points=50;
+	int select_Active_Points=20;
 
 	CIvm* gp_classifier= new CIvm (conTRAINING_100, conTRAINING_100_labels,
 			Kernel_rbf,	noiseModel_classification, selectCrit,
@@ -260,8 +260,6 @@ int main(int argc, char** argv) {
 //
 ////	gp_classifier->init();
 
-	std::cout << "conTRAINING_100 value : " << conTRAINING_100->getVal(5,5) << std::endl;
-
 //	/*, int selectCrit,
 //	   unsigned int dVal, int verbos=2);
 //*/
@@ -297,10 +295,7 @@ int main(int argc, char** argv) {
 //	gp_classifier= new CIvm();
 //	gp->X_u;
 
-
-
-	std::cout << " done";
-
+	std::cout << "done" << std::endl;
 
 	return 0;
 
