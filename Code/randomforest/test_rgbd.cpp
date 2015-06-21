@@ -11,7 +11,11 @@
 
 std::list<const CvDTreeNode*> get_leaf_node( CvForestTree* tree );
 
-
+struct leaf_samples{
+  CvDTreeNode* leaf;
+  std::list<int> indices; 
+}leaf_sample;
+  
 int main(int argc, char** argv)
 {
   // std::cout<<FLT_EPSILON<<std::endl; 
@@ -55,13 +59,23 @@ int main(int argc, char** argv)
 	       cv::Mat(), cv::Mat(), var_type, cv::Mat(), params);
   
   // perform classifier testing and report results
-  cv::Mat test_sample;
+  cv::Mat test_sample, train_sample;
   int correct_class = 0;
   int wrong_class = 0;
   int result;
   int label;
   int false_positives [NUMBER_OF_CLASSES] = {0,0,0,0,0};
   int false_negatives [NUMBER_OF_CLASSES] = {0,0,0,0,0};
+
+  CvDTreeNode* leaf_nodes [training_data.rows];
+
+  for (int tsample = 0; tsample < training_data.rows; tsample++)
+    {
+      train_sample = training_data.row(tsample);
+      CvForestTree* tree = rtree->get_tree(1);
+      CvDTreeNode* leaf_node = tree->predict(train_sample, cv::Mat());
+      leaf_nodes[tsample] = leaf_node; 
+    }
 
   // printf( "\nUsing testing database: %s\n\n", argv[2]);
 
@@ -84,7 +98,8 @@ int main(int argc, char** argv)
       std::list<const CvDTreeNode*> leaf_list;
       leaf_list = get_leaf_node( tree );
       printf("Number of Leaf nodes: %ld\n", leaf_list.size());
-     
+
+      
       
       // if the prediction and the (true) testing classification are the same
       // (N.B. openCV uses a floating point decision tree implementation!)
@@ -118,6 +133,31 @@ int main(int argc, char** argv)
 	      false_negatives[i],
 	      (double) false_negatives[i]*100/testing_data.rows);
     }
+
+  std::list<leaf_samples> node_indices;
+  for (int i = 0; i < training_data.cols; i++) 
+    {
+      CvDTreeNode* leaf_node = leaf_nodes[i];
+
+      if (leaf_node == NULL)
+	continue;
+
+      leaf_sample.leaf = leaf_node;
+      leaf_sample.indices.insert(leaf_sample.indices.begin(),i);
+
+      for (int j=i+1; j < training_data.cols; j++) 
+	{
+	  if (leaf_node == leaf_nodes[j]) {
+            leaf_sample.indices.insert(leaf_sample.indices.begin(),j);
+	    leaf_nodes[j] = NULL;
+	  }
+	}
+
+      node_indices.insert(node_indices.begin(),leaf_sample);
+      printf("the size of node_indices: %d\n", node_indices.size());
+      printf("the first leaf node depth:%d\n", node_indices.front().leaf->depth);
+    }
+
         
   // all matrix memory free by destructors
 
