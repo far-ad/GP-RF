@@ -133,54 +133,36 @@ int main(int argc, char** argv)
 	      false_negatives[i],
 	      (double) false_negatives[i]*100/testing_data.rows);
     }
-
+  //get sample indices for leaf nodes
   std::list<leaf_samples> node_indices;
   for (int i = 0; i < training_data.rows; i++) 
     {
       CvDTreeNode* leaf_node = leaf_nodes[i];
-<<<<<<< HEAD
-      CvDTreeNode* temp;
-      std::stack<const CvDTreeNode*> temp_stack;
-      leaf_sample.leaf = leaf_node;
-      //check if the ith data is used, if not, go to the for loop
-      
-      for (int j=i+1; j < training_data.rows; j++) 
-	{
-	  if (leaf_node == leaf_nodes[j])
-              leaf_sample.indices.insert(leaf_sample.indices.begin(),j);
-	  else j++;
-	}
-      
-      node_indices.insert(node_indices.begin(),leaf_sample);
-      printf("the size of node_indices: %d\n", node_indices.size());
-      printf("the first leaf node depth:%d\n", node_indices.front().leaf->depth);
-=======
 
-      if (leaf_node != NULL) {
-	leaf_samples leaf_sample;
-	leaf_sample.leaf = leaf_node;
-	leaf_sample.indices.push_front(i);
-
-
-	printf("\n Value of leaf: %f\n", leaf_node->value);
-	printf(", %lu", i);
-	for (int j=i+1; j < training_data.rows; j++) 
+      if (leaf_node != NULL) 
 	  {
-	    if (leaf_node == leaf_nodes[j]) {
-	      leaf_sample.indices.push_front(j);
-	      printf(", %lu", j);
-	      leaf_nodes[j] = NULL;
-	    }
-	  }
+		leaf_samples leaf_sample;
+		leaf_sample.leaf = leaf_node;
+		leaf_sample.indices.push_front(i);
+		printf("\nValue of leaf: %f\n", leaf_node->value);
+		printf("Smaple indices for leaf:\n");
+		printf(" %d", i);
 
-	node_indices.push_front(leaf_sample);      
+		for (int j=i+1; j < training_data.rows; j++) 
+	  	{
+	    	if (leaf_node == leaf_nodes[j])
+			{
+	      		leaf_sample.indices.push_front(j);
+	      		printf(" %lu", j);
+	      		leaf_nodes[j] = NULL;
+	    	}
+	  	}
+		node_indices.push_front(leaf_sample);      
       }
-      
->>>>>>> 815fe9208c7fb5e78defca3a9794149c9ce0ecd6
     }
-  printf("\n Size of node_indices: %d\n", node_indices.size()); 
+  printf("\nSize of node_indices: %d\n", node_indices.size()); 
 
-  
+  //get double pointers for features and labels
   const double* p = testing_data.ptr<double>(0);
   std::vector<double> vec(p, p + testing_data.cols);
 
