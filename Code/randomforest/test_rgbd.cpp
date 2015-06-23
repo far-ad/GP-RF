@@ -2,7 +2,7 @@
 #include <opencv/ml.h>
 #include <stdio.h>
 #include <list>
-
+#include <stack>
 #include "../dataset/load_rgbd_cv.h"
 
 #define NUMBER_OF_CLASSES 5
@@ -135,24 +135,21 @@ int main(int argc, char** argv)
     }
 
   std::list<leaf_samples> node_indices;
-  for (int i = 0; i < training_data.cols; i++) 
+  for (int i = 0; i < training_data.rows; i++) 
     {
       CvDTreeNode* leaf_node = leaf_nodes[i];
-
-      if (leaf_node == NULL)
-	continue;
-
+      CvDTreeNode* temp;
+      std::stack<const CvDTreeNode*> temp_stack;
       leaf_sample.leaf = leaf_node;
-      leaf_sample.indices.insert(leaf_sample.indices.begin(),i);
-
-      for (int j=i+1; j < training_data.cols; j++) 
+      //check if the ith data is used, if not, go to the for loop
+      
+      for (int j=i+1; j < training_data.rows; j++) 
 	{
-	  if (leaf_node == leaf_nodes[j]) {
-            leaf_sample.indices.insert(leaf_sample.indices.begin(),j);
-	    leaf_nodes[j] = NULL;
-	  }
+	  if (leaf_node == leaf_nodes[j])
+              leaf_sample.indices.insert(leaf_sample.indices.begin(),j);
+	  else j++;
 	}
-
+      
       node_indices.insert(node_indices.begin(),leaf_sample);
       printf("the size of node_indices: %d\n", node_indices.size());
       printf("the first leaf node depth:%d\n", node_indices.front().leaf->depth);
