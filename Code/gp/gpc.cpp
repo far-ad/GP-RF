@@ -56,6 +56,7 @@ void GPC::train(double *labels, double *features, int n_samples) {
 	noise = new CProbitNoise( training_labels );
 
 	predictor = new CIvm(training_data, training_labels, kernel, noise, select_crit, active_set_size, 3);
+	predictor->optimise();
 }
 
 double GPC::predict(double *features) {
