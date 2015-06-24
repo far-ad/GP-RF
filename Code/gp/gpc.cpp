@@ -29,8 +29,9 @@ CMatrix *extract_label(CMatrix *labels_matrix, double filtered_label)
 
 
 
-GPC::GPC(int n_features) {
+GPC::GPC(int n_features, double label) {
 	input_dim = n_features;
+	target_label = label;
 
 	active_set_size = 20;
 	select_crit = CIvm::ENTROPY;
@@ -47,7 +48,7 @@ GPC::GPC(int n_features) {
 
 void GPC::train(double *labels, double *features, int n_samples) {
 	CMatrix* training_data = new CMatrix(n_samples, input_dim, features);
-	CMatrix* training_labels = new CMatrix(n_samples, 1, labels);
+	CMatrix* training_labels = extract_label(new CMatrix(n_samples, 1, labels), target_label);
 
 	// TODO:
 	// Noise and kernel are just temporarily reinitialized here!
