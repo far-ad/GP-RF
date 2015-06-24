@@ -8,6 +8,7 @@ public:
 
 	void train(double* labels, double* features, int n_samples);
 	double predict(double* features);
+	void test(double* labels, double* features, int n_samples);
 private:
 	int input_dim;
 	int active_set_size;

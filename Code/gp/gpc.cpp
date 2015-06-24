@@ -67,3 +67,10 @@ double GPC::predict(double *features) {
 	return pred.getVal(0,0);
 }
 
+void GPC::test(double* labels, double* features, int n_samples) {
+	CMatrix* testing_labels = extract_label(new CMatrix(n_samples, 1, labels), target_label);
+	CMatrix* testing_data = new CMatrix(n_samples, input_dim, features);
+
+	predictor->test(*testing_labels, *testing_data);
+}
+

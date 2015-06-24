@@ -38,11 +38,7 @@ int main(int argc, char** argv) {
 
 	GPC classifier(input_dim, target_label);
 	classifier.train(training_labels_d, training_data_d, n_training_data);
-	
-	for(int i=0; i<n_testing_data; i++)
-	{
-		std::cout << "class: " << testing_labels.at<float>(i,0) << std::endl;
-		std::cout << "\tprediction: " << classifier.predict(&testing_data_d[input_dim*i]) << std::endl;
-	}
+
+	classifier.test(testing_labels_d, testing_data_d, n_testing_data);
 }
 
