@@ -13,7 +13,10 @@ CC=g++ ${DBG_FLAGS}
 
 all: gp rf
 
-gp: gp/newGP_test gp/test_gp
+gp: gp/gpc gp/newGP_test gp/test_gp
+
+gp/gpc: gp/test_gpc_cv.o gp/gpc.o dataset/load_rgbd_cv.o
+	${CC} gp/test_gpc_cv.o gp/gpc.o dataset/load_rgbd_cv.o ${LIBS_GP} ${LIBS_OPENCV} -o gp/gpc 
 
 gp/test_gp: gp/test_gp.o gp/read_rgbd_data.o
 	${CC} gp/read_rgbd_data.o gp/test_gp.o ${LIBS_GP} -o gp/test_gp
