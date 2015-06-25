@@ -36,7 +36,9 @@ GPC::GPC(int n_features, double label) {
 	active_set_size = 20;
 	select_crit = CIvm::ENTROPY;
 
-	noise = new CProbitNoise();
+	// noise will be initialized in the training routine
+	// s.t. the target can be set
+	noise = (CNoise*) NULL;
 	kernel = new CRbfKern( input_dim );
 
 	CDist* prior = new CGammaDist();
@@ -50,10 +52,17 @@ void GPC::train(double *labels, double *features, int n_samples) {
 	CMatrix* training_data = new CMatrix(n_samples, input_dim, features);
 	CMatrix* training_labels = extract_label(new CMatrix(n_samples, 1, labels), target_label);
 
-	// TODO:
-	// Noise and kernel are just temporarily reinitialized here!
-	// This should be removed as soon as possible to allow relearning or online learning
-	noise = new CProbitNoise( training_labels );
+	// initialize the noise model if this is the first training
+	// otherwise update the "target"
+	if(noise == NULL) {
+		noise = new CProbitNoise( training_labels );
+	}
+	else {
+		CMatrix noiseParams(1, noise->getNumParams());
+		noise->getParams( noiseParams );
+		noise->setTarget( training_labels );
+		noise->setParams( noiseParams );
+	}
 
 	predictor = new CIvm(training_data, training_labels, kernel, noise, select_crit, active_set_size, 3);
 	predictor->optimise();
