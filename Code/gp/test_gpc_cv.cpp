@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <string>
 
 void fvec2dvec(float* vec, double* res_vec, int n)
 {
@@ -35,7 +36,7 @@ int main(int argc, char** argv) {
 	cv::Mat testing_labels = read_rgbd_data_cv(argv[4], max_samples);
 
 	int input_dim = training_data.cols;
-	int n_training_data = training_data.rows;
+	int n_training_data = training_data.rows / 2;
 	int n_testing_data = testing_data.rows;
 
 	double* training_data_d = new double[n_training_data*input_dim];
@@ -57,6 +58,15 @@ int main(int argc, char** argv) {
 	GPC classifier(input_dim, target_label);
 	classifier.train(training_labels_d, training_data_d, n_training_data);
 
+	classifier.test(testing_labels_d, testing_data_d, n_testing_data);
+
+	std::string dummy;
+	std::getline(std::cin, dummy);
+
+	fvec2dvec(((float*) training_data.datastart) + n_training_data, training_labels_d, n_training_data);
+	fvec2dvec(((float*) training_labels.datastart) + n_training_data, training_labels_d, n_training_data);
+	
+	classifier.train(training_labels_d, training_data_d, n_training_data);
 	classifier.test(testing_labels_d, testing_data_d, n_testing_data);
 }
 
