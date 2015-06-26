@@ -6,6 +6,7 @@
 #include "../dataset/load_rgbd_cv.h"
 
 #define NUMBER_OF_CLASSES 5
+#define NUMBER_OF_TREES 100
 #define NUMBER_OF_TRAINING_SAMPLES 200
 #define NUMBER_OF_TESTING_SAMPLES 1000
 
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
 				 priors, // the array of priors
 				 false,  // calculate variable importance
 				 20,       // number of variables randomly selected at node and used to find the best split(s).
-				 100,	 // max number of trees in the forest
+				 NUMBER_OF_TREES,	 // max number of trees in the forest
 				 0.01f,				// forrest accuracy
 				 CV_TERMCRIT_ITER |	CV_TERMCRIT_EPS // termination cirteria
 				 );
@@ -93,14 +94,11 @@ int main(int argc, char** argv)
       printf("Testing Sample %i -> class result (digit %d) - label (digit %d)\n", tsample, result, label);
 
       // get the leaf nodes of the first tree in the forest
-
-      CvForestTree* tree = rtree->get_tree(1);
+      /*CvForestTree* tree = rtree->get_tree(0);
       std::list<const CvDTreeNode*> leaf_list;
       leaf_list = get_leaf_node( tree );
-      printf("Number of Leaf nodes: %ld\n", leaf_list.size());
+      printf("Number of Leaf nodes: %ld\n", leaf_list.size());*/
 
-      
-      
       // if the prediction and the (true) testing classification are the same
       // (N.B. openCV uses a floating point decision tree implementation!)
       if (fabs(result - label)
@@ -133,7 +131,15 @@ int main(int argc, char** argv)
 	      false_negatives[i],
 	      (double) false_negatives[i]*100/testing_data.rows);
     }
-  //get sample indices for leaf nodes
+
+	// get all the leaf nodes in the forest
+   for (int i = 0; i < NUMBER_OF_TREES; i ++)
+	{ 
+      	CvForestTree* tree = rtree->get_tree(i);
+      	std::list<const CvDTreeNode*> leaf_list;
+      	leaf_list = get_leaf_node( tree );
+	}
+  	//get training_sample indices for leaf nodes
   std::list<leaf_samples> node_indices;
   for (int i = 0; i < training_data.rows; i++) 
     {
@@ -160,7 +166,9 @@ int main(int argc, char** argv)
 		node_indices.push_front(leaf_sample);      
       }
     }
-  printf("\nSize of node_indices: %d\n", node_indices.size()); 
+  	printf("\nSize of node_indices: %d\n", node_indices.size()); 
+	//get labels and features
+	
 
   //get double pointers for features and labels
   const double* p = testing_data.ptr<double>(0);
