@@ -1,3 +1,6 @@
+#ifndef GPC_HPP
+#define GPC_HPP
+
 #include <gp-lvm/CKern.h>
 #include <gp-lvm/CNoise.h>
 #include <gp-lvm/CIvm.h>
@@ -20,3 +23,4 @@ private:
 	CIvm* predictor;
 };
 
+#endif

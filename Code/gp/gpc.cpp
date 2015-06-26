@@ -15,15 +15,15 @@ CMatrix *extract_label(CMatrix *labels_matrix, double filtered_label)
 {
 	CMatrix *result = new CMatrix(*labels_matrix);
 
-	for(int i=0; i<result->getRows(); i++) {
-		for(int j=0; j<result->getCols(); j++) {
+	for(unsigned int i=0; i<result->getRows(); i++) {
+		for(unsigned int j=0; j<result->getCols(); j++) {
 			if(abs(result->getVal(i,j) - filtered_label) <= FLT_EPSILON)
 				result->setVal(1.0,i,j);
 			else
 				result->setVal(-1.0,i,j);
 		}
 	}
-	
+
 	return result;
 }
 
@@ -31,8 +31,8 @@ CMatrix* extract_two_labels(CMatrix* labels_matrix, double first_label, double s
 {
 	CMatrix* result = new CMatrix(*labels_matrix);
 
-	for(int i=0; i<result->getRows(); i++) {
-		for(int j=0; j<result->getCols(); j++) {
+	for(unsigned int i=0; i<result->getRows(); i++) {
+		for(unsigned int j=0; j<result->getCols(); j++) {
 			double val = result->getVal(i,j);
 			if(abs(val - first_label) <= FLT_EPSILON)
 				result->setVal(1.0,i,j);

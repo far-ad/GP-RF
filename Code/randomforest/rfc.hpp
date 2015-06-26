@@ -1,3 +1,6 @@
+#ifndef RFC_HPP
+#define RFC_HPP
+
 #include <opencv/cv.h>
 #include <opencv/ml.h>
 #include <stdio.h>
@@ -27,3 +30,5 @@ private:
 
 	cv::Mat dvec2Mat(double* vec, int n_features);
 };
+
+#endif
