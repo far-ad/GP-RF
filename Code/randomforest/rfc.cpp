@@ -1,20 +1,10 @@
-#include <opencv/cv.h>
-#include <opencv/ml.h>
-#include <stdio.h>
-#include <list>
-#include "../dataset/load_rgbd_cv.h"
+#include "rfc.hpp"
 
 #define NUMBER_OF_TREES 100
 
 CvRTParams params;
 CvRTrees* rtree;
 
-typedef struct {
-  CvDTreeNode* leaf;
-  std::list<int> indices; 
-} leaf_samples;
-
-std::list<leaf_samples> leaf_with_samples;
 
 RFC::RFC() {
 	float priors[] = {1,1,1,1,1};  // weights of each classification for classes
