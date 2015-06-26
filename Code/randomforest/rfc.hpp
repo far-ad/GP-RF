@@ -6,8 +6,9 @@
 
 
 typedef struct {
+public:
   CvDTreeNode* leaf;
-  std::list<int> indices; 
+  std::list<int> indices;
 } leaf_samples;
 
 class RFC {
@@ -21,4 +22,4 @@ public:
 private:
 	CvRTParams params;
 	CvRTrees* rtree;
-}
+};

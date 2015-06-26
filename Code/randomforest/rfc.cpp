@@ -2,8 +2,7 @@
 
 #define NUMBER_OF_TREES 100
 
-CvRTParams params;
-CvRTrees* rtree;
+
 
 
 RFC::RFC() {
@@ -35,7 +34,7 @@ rtree = new CvRTrees;
 }
 
 
-std::list<leaf_samples> split_data_by_leafs(cv::Mat training_data) {
+std::list<leaf_samples> RFC::split_data_by_leafs(cv::Mat training_data) {
 CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 
   for (int i = 0; i < NUMBER_OF_TREES; i++)
@@ -43,19 +42,19 @@ CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 	  CvForestTree* tree = rtree->get_tree(i);
 	  for (int tsample = 0; tsample < training_data.rows; tsample++)
 		{
-			train_sample = training_data.row(tsample);
+		    cv::Mat train_sample = training_data.row(tsample);
       		CvDTreeNode* leaf_node = tree->predict(train_sample, cv::Mat());
-      		leaf_nodes[tsample*i+tsample] = leaf_node; 
+      		leaf_nodes[tsample*i+tsample] = leaf_node;
 		}
     }
 
 
-  std::list<leaf_samples> leaf_	with_samples;
-  for (int i = 0; i < training_data.rows*NUMBER_OF_TREES; i++) 
+  std::list<leaf_samples> leaf_with_samples;
+  for (int i = 0; i < training_data.rows*NUMBER_OF_TREES; i++)
     {
       CvDTreeNode* leaf_node = leaf_nodes[i];
 
-      if (leaf_node != NULL) 
+      if (leaf_node != NULL)
 	  {
 		leaf_samples leaf_sample;
 		leaf_sample.leaf = leaf_node;
@@ -64,7 +63,7 @@ CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 		printf("Smaple indices for leaf:\n");
 		printf(" %d", i);
 
-		for (int j=i+1; j < training_data.rows*NUMBER_OF_TREES; j++) 
+		for (int j=i+1; j < training_data.rows*NUMBER_OF_TREES; j++)
 	  	{
 	    	if (leaf_node == leaf_nodes[j])
 			{
@@ -73,13 +72,13 @@ CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 	      		leaf_nodes[j] = NULL;
 	    	}
 	  	}
-		leaf_with_samples.push_front(leaf_sample);      
+		leaf_with_samples.push_front(leaf_sample);
       }
     }
 	return leaf_with_samples;
 }
 
-std::list<CvDTreeNode*> get_leaf_list(cv::Mat testing_data)
+std::list<CvDTreeNode*>  RFC::get_leaf_list(cv::Mat testing_data)
 {
 	std::list<CvDTreeNode*> leaf_list;
 	for (int i = 0; i < NUMBER_OF_TREES; i++)
