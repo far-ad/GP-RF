@@ -13,13 +13,17 @@ public:
 
 class RFC {
 public:
-	RFC();
+	RFC(int n_features);
 
-	void train(cv::Mat training_data,cv::Mat training_labels);
-	std::list<leaf_samples> split_data_by_leafs(cv::Mat training_data);
-	std::list<CvDTreeNode*> get_leaf_list(cv::Mat testing_data);
+	void train(double* training_labels, double* training_data, int n_samples);
+	std::list<leaf_samples> split_data_by_leafs(double* training_data, int n_samples);
+	std::list<CvDTreeNode*> get_leaf_list(double* testing_data, int n_samples);
 
 private:
 	CvRTParams params;
 	CvRTrees* rtree;
+
+	int n_features;
+
+	cv::Mat dvec2Mat(double* vec, int n_features);
 };

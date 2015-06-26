@@ -3,9 +3,24 @@
 #define NUMBER_OF_TREES 100
 
 
+void dvec2fvec(double* vec, float* res_vec, int n)
+{
+	for(int i=0; i<n; i++) {
+		res_vec[i] = (float) vec[i];
+	}
+}
+
+/**
+ * Converts vector of observations to cv matrices
+ */
+cv::Mat RFC::dvec2Mat(double* vec, int n_samples) {
+	return cv::Mat( n_samples, n_features, CV_32FC1, vec );
+}
 
 
-RFC::RFC() {
+RFC::RFC(int n_features) {
+	this->n_features = n_features;
+
 	float priors[] = {1,1,1,1,1};  // weights of each classification for classes
 	params = CvRTParams(25, // max depth
 		50, // min sample count
@@ -22,7 +37,11 @@ RFC::RFC() {
 }
 
 
-void RFC::train(cv::Mat training_data,cv::Mat training_labels) {
+void RFC::train(double* training_labels_d, double* training_data_d, int n_samples) {
+
+	cv::Mat training_labels = dvec2Mat(training_labels_d, n_samples);
+	cv::Mat training_data = dvec2Mat(training_data_d, n_samples);
+
 cv::Mat var_type = cv::Mat(training_data.cols + 1, 1, CV_8U );
   var_type.setTo(cv::Scalar(CV_VAR_NUMERICAL) ); // all inputs are numerical
   var_type.at<uchar>(training_data.cols, 0) = CV_VAR_CATEGORICAL; // the labels are categorical
@@ -34,7 +53,9 @@ rtree = new CvRTrees;
 }
 
 
-std::list<leaf_samples> RFC::split_data_by_leafs(cv::Mat training_data) {
+std::list<leaf_samples> RFC::split_data_by_leafs(double* training_data_d, int n_samples) {
+	cv::Mat training_data = dvec2Mat(training_data_d, n_samples);
+
 CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 
   for (int i = 0; i < NUMBER_OF_TREES; i++)
@@ -78,8 +99,10 @@ CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 	return leaf_with_samples;
 }
 
-std::list<CvDTreeNode*>  RFC::get_leaf_list(cv::Mat testing_data)
+std::list<CvDTreeNode*>  RFC::get_leaf_list(double* testing_data_d, int n_samples)
 {
+	cv::Mat testing_data = dvec2Mat(testing_data_d, n_samples);
+
 	std::list<CvDTreeNode*> leaf_list;
 	for (int i = 0; i < NUMBER_OF_TREES; i++)
 	{
