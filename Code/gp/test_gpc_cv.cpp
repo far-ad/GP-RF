@@ -63,8 +63,8 @@ int main(int argc, char** argv) {
 	std::string dummy;
 	std::getline(std::cin, dummy);
 
-	fvec2dvec(((float*) training_data.datastart) + n_training_data, training_labels_d, n_training_data);
-	fvec2dvec(((float*) training_labels.datastart) + n_training_data, training_labels_d, n_training_data);
+	fvec2dvec(((float*) training_data.datastart) + n_training_data*training_data.cols, training_labels_d, n_training_data);
+	fvec2dvec(((float*) training_labels.datastart) + n_training_data*1, training_labels_d, n_training_data);
 	
 	classifier.train(training_labels_d, training_data_d, n_training_data);
 	classifier.test(testing_labels_d, testing_data_d, n_testing_data);
