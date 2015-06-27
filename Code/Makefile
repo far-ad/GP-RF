@@ -11,7 +11,11 @@ DBG_FLAGS=-ggdb
 
 CC=g++ ${DBG_FLAGS}
 
-all: gp rf
+# general rule for building object files
+%.o: %.cpp
+	${CC} ${INCLUDES} -c $< -o $@
+
+all: gp rf gprf
 
 gp: gp/gpc gp/newGP_test gp/test_gp
 
@@ -35,8 +39,8 @@ randomforest/test_images: randomforest/randomforest.o randomforest/test_images.o
 randomforest/test_rgbd: randomforest/test_rgbd.o dataset/load_rgbd_cv.o randomforest/get_leaf_nodes.o
 	${CC} dataset/load_rgbd_cv.o randomforest/test_rgbd.o randomforest/get_leaf_nodes.o ${LIBS_OPENCV} -o randomforest/test_rgbd
 
-%.o: %.cpp
-	${CC} ${INCLUDES} -c $< -o $@
+gprf: gp/gpc.o randomforest/rfc.o GP_RF.o GP_RF_test.o
+	${CC} gp/gpc.o randomforest/rfc.o GP_RF.o GP_RF_test.o ${LIBS_GP} ${LIBS_OPENCV} -o gprf
 
 clean:
 	rm -f gp/newGP_test randomforest/test_{rgbd,images,randomforest} {dataset,gp,randomforest}/*.o

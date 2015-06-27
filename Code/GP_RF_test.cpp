@@ -3,9 +3,9 @@
 // TODO:
 // gpc.hpp fixes some unknown problems with istringstream
 // Otherwise this include should not be necessary.
-#include "gpc.hpp"
+#include "gp/gpc.hpp"
 
-#include "../dataset/load_rgbd.h"
+#include "dataset/load_rgbd.h"
 
 #include <iostream>
 #include <sstream>

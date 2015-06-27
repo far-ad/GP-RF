@@ -1,7 +1,8 @@
 #include <map>
 #include <opencv/ml.h>
-#include "gpc.hpp"
-#include "rfc.hpp"
+
+#include "gp/gpc.hpp"
+#include "randomforest/rfc.hpp"
 
 
 using namespace std;

@@ -1,7 +1,9 @@
 #include "GP_RF.hpp"
-#include "gpc.hpp"
+
+#include "gp/gpc.hpp"
+#include "randomforest/rfc.hpp"
+
 #include <list>
-#include "rfc.hpp"
 
 using namespace std;
 
