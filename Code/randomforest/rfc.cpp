@@ -14,14 +14,20 @@ void dvec2fvec(double* vec, float* res_vec, int n)
  * Converts vector of observations to a cv matrix.
  */
 cv::Mat RFC::dvec2dataMat(double* vec, int n_samples) {
-	return cv::Mat( n_samples, n_features, CV_32FC1, vec );
+  float* data_f = new float[n_features*n_samples];
+	dvec2fvec(vec, data_f, n_features*n_samples);
+
+	return cv::Mat( n_samples, n_features, CV_32FC1, data_f );
 }
 
 /**
  * Converts a vector of labels to a cv matrix.
  */
 cv::Mat RFC::dvec2labelsMat(double* vec, int n_samples) {
-	return cv::Mat( n_samples, 1, CV_32FC1, vec );
+	float* data_f = new float[n_features*n_samples];
+	dvec2fvec(vec, data_f, n_samples);
+
+	return cv::Mat( n_samples, 1, CV_32FC1, data_f );
 }
 
 
