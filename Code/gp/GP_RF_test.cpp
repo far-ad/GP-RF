@@ -1,10 +1,16 @@
-#include "gpc.hpp"
 #include "GP_RF.hpp"
+
+// TODO:
+// gpc.hpp fixes some unknown problems with istringstream
+// Otherwise this include should not be necessary.
+#include "gpc.hpp"
+
+#include "../dataset/load_rgbd.h"
+
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <string>
-#include "../dataset/load_rgbd.h"
 
 int main(int argc, char** argv) {
 
@@ -33,3 +39,4 @@ int main(int argc, char** argv) {
 	classifier->train(training_labels, training_data, n_training_samples);
 
 }
+
