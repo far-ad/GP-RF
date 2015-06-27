@@ -11,10 +11,17 @@ void dvec2fvec(double* vec, float* res_vec, int n)
 }
 
 /**
- * Converts vector of observations to cv matrices
+ * Converts vector of observations to a cv matrix.
  */
-cv::Mat RFC::dvec2Mat(double* vec, int n_samples) {
+cv::Mat RFC::dvec2dataMat(double* vec, int n_samples) {
 	return cv::Mat( n_samples, n_features, CV_32FC1, vec );
+}
+
+/**
+ * Converts a vector of labels to a cv matrix.
+ */
+cv::Mat RFC::dvec2labelsMat(double* vec, int n_samples) {
+	return cv::Mat( n_samples, 1, CV_32FC1, vec );
 }
 
 
@@ -39,8 +46,8 @@ RFC::RFC(int n_features) {
 
 void RFC::train(double* training_labels_d, double* training_data_d, int n_samples) {
 
-	cv::Mat training_labels = dvec2Mat(training_labels_d, n_samples);
-	cv::Mat training_data = dvec2Mat(training_data_d, n_samples);
+	cv::Mat training_labels = dvec2labelsMat(training_labels_d, n_samples);
+	cv::Mat training_data = dvec2dataMat(training_data_d, n_samples);
 
 cv::Mat var_type = cv::Mat(training_data.cols + 1, 1, CV_8U );
   var_type.setTo(cv::Scalar(CV_VAR_NUMERICAL) ); // all inputs are numerical
@@ -54,7 +61,7 @@ rtree = new CvRTrees;
 
 
 std::list<leaf_samples> RFC::split_data_by_leafs(double* training_data_d, int n_samples) {
-	cv::Mat training_data = dvec2Mat(training_data_d, n_samples);
+	cv::Mat training_data = dvec2dataMat(training_data_d, n_samples);
 
 CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 
@@ -101,7 +108,7 @@ CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
 
 std::list<CvDTreeNode*>  RFC::get_leaf_list(double* testing_data_d, int n_samples)
 {
-	cv::Mat testing_data = dvec2Mat(testing_data_d, n_samples);
+	cv::Mat testing_data = dvec2dataMat(testing_data_d, n_samples);
 
 	std::list<CvDTreeNode*> leaf_list;
 	for (int i = 0; i < NUMBER_OF_TREES; i++)

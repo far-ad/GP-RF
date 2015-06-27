@@ -28,7 +28,8 @@ private:
 
 	int n_features;
 
-	cv::Mat dvec2Mat(double* vec, int n_features);
+	cv::Mat dvec2dataMat(double* vec, int n_features);
+	cv::Mat dvec2labelsMat(double*vec, int n_features);
 };
 
 #endif
