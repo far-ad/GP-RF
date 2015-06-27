@@ -24,6 +24,6 @@ private:
 	int n_features;
 	RFC *forest_classifier;
 	///mapping from the leaf nodes to the Gaussian Process classifiers
-	map<CvDTreeNode*, GPC*> *leaf_map;
+	map<CvDTreeNode*, GPC*> *leaf_gp_map;
 
 };

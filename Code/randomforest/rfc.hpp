@@ -5,6 +5,7 @@
 #include <opencv/ml.h>
 #include <stdio.h>
 #include <list>
+#include <map>
 #include "../dataset/load_rgbd_cv.h"
 
 
@@ -14,12 +15,15 @@ public:
   std::list<int> indices;
 } leaf_samples;
 
+typedef std::map<CvDTreeNode*, std::list<int> > leaf_map;
+
+
 class RFC {
 public:
 	RFC(int n_features);
 
 	void train(double* training_labels, double* training_data, int n_samples);
-	std::list<leaf_samples> split_data_by_leafs(double* training_data, int n_samples);
+	leaf_map* split_data_by_leafs(double* training_data, int n_samples);
 	std::list<CvDTreeNode*> get_leaf_list(double* testing_data, int n_samples);
 
 private:

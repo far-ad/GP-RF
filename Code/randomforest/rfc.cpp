@@ -66,50 +66,32 @@ rtree = new CvRTrees;
 }
 
 
-std::list<leaf_samples> RFC::split_data_by_leafs(double* training_data_d, int n_samples) {
-	cv::Mat training_data = dvec2dataMat(training_data_d, n_samples);
+leaf_map* RFC::split_data_by_leafs(double* training_data_d, int n_samples) {
+  cv::Mat training_data = dvec2dataMat(training_data_d, n_samples);
 
-CvDTreeNode* leaf_nodes [training_data.rows*NUMBER_OF_TREES];
+  // map leafs to lists of indices of observations
+  leaf_map* leafs_indices_map = new leaf_map;
 
-  for (int i = 0; i < NUMBER_OF_TREES; i++)
-    {
-	  CvForestTree* tree = rtree->get_tree(i);
-	  for (int tsample = 0; tsample < training_data.rows; tsample++)
-		{
-		    cv::Mat train_sample = training_data.row(tsample);
-      		CvDTreeNode* leaf_node = tree->predict(train_sample, cv::Mat());
-      		leaf_nodes[tsample*i+tsample] = leaf_node;
-		}
-    }
+  int n_trees = rtree->get_tree_count();
 
+  for (int i_sample = 0; i_sample < training_data.rows; i_sample++)
+  {
+	  cv::Mat sample = training_data.row(i_sample);
 
-  std::list<leaf_samples> leaf_with_samples;
-  for (int i = 0; i < training_data.rows*NUMBER_OF_TREES; i++)
-    {
-      CvDTreeNode* leaf_node = leaf_nodes[i];
-
-      if (leaf_node != NULL)
+	  for (int i_tree = 0; i_tree < n_trees; i_tree++)
 	  {
-		leaf_samples leaf_sample;
-		leaf_sample.leaf = leaf_node;
-		leaf_sample.indices.push_front(i);
-		printf("\nValue of leaf: %f\n", leaf_node->value);
-		printf("Smaple indices for leaf:\n");
-		printf(" %d", i);
+		  CvDTreeNode* leaf_node = rtree->get_tree(i_tree)->predict(sample, cv::Mat());
+		  if( leafs_indices_map->find(leaf_node) != leafs_indices_map->end() ) {
+			  std::list<int> l = (*leafs_indices_map)[leaf_node];
+			  l.insert(l.end(), i_sample);
+		  }
+		  else {
+			  leafs_indices_map->insert(leaf_map::value_type(leaf_node, std::list<int>(1, i_sample)));
+		  }
+	  }
+  }
 
-		for (int j=i+1; j < training_data.rows*NUMBER_OF_TREES; j++)
-	  	{
-	    	if (leaf_node == leaf_nodes[j])
-			{
-	      		leaf_sample.indices.push_front(j);
-	      		printf(" %lu", j);
-	      		leaf_nodes[j] = NULL;
-	    	}
-	  	}
-		leaf_with_samples.push_front(leaf_sample);
-      }
-    }
-	return leaf_with_samples;
+  return leafs_indices_map;
 }
 
 std::list<CvDTreeNode*>  RFC::get_leaf_list(double* testing_data_d, int n_samples)
