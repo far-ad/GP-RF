@@ -7,7 +7,7 @@
 #include <list>
 #include <map>
 #include "../dataset/load_rgbd_cv.h"
-
+#include "get_leaf_nodes.hpp"
 
 typedef struct {
 public:
@@ -24,7 +24,7 @@ public:
 
 	void train(double* training_labels, double* training_data, int n_samples);
 	leaf_map* split_data_by_leafs(double* training_data, int n_samples);
-	std::list<CvDTreeNode*> get_leaf_list(double* testing_data, int n_samples);
+	std::list<CvDTreeNode*>& get_leaf_list(double* testing_data, int n_samples);
 
 private:
 	CvRTParams params;
