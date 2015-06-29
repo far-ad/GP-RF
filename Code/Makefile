@@ -39,9 +39,10 @@ randomforest/test_images: randomforest/randomforest.o randomforest/test_images.o
 randomforest/test_rgbd: randomforest/test_rgbd.o dataset/load_rgbd_cv.o randomforest/get_leaf_nodes.o
 	${CC} dataset/load_rgbd_cv.o randomforest/test_rgbd.o randomforest/get_leaf_nodes.o ${LIBS_OPENCV} -o randomforest/test_rgbd
 
-gprf: gp/gpc.o randomforest/rfc.o GP_RF.o GP_RF_test.o
+gprf: gp/gpc randomforest/rfc.o GP_RF.o GP_RF_test.o
 	${CC} gp/gpc.o randomforest/rfc.o GP_RF.o GP_RF_test.o ${LIBS_GP} ${LIBS_OPENCV} -o gprf
 
 clean:
-	rm -f gp/newGP_test randomforest/test_{rgbd,images,randomforest} {dataset,gp,randomforest}/*.o
+	rm -f {dataset,gp,randomforest,.}/*.o
+	rm -f gprf gp/{test_gp,newGP_test,gpc} randomforest/test_{rgbd,images,randomforest} 
 
