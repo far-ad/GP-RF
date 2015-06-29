@@ -9,7 +9,7 @@ LIBS_GP=-lgp -lgfortran -llapack -lblas
 
 DBG_FLAGS=-ggdb
 
-CC=g++ ${DBG_FLAGS}
+CC=clang++ ${DBG_FLAGS}
 
 # general rule for building object files
 %.o: %.cpp
@@ -39,8 +39,8 @@ randomforest/test_images: randomforest/randomforest.o randomforest/test_images.o
 randomforest/test_rgbd: randomforest/test_rgbd.o dataset/load_rgbd_cv.o randomforest/get_leaf_nodes.o
 	${CC} dataset/load_rgbd_cv.o randomforest/test_rgbd.o randomforest/get_leaf_nodes.o ${LIBS_OPENCV} -o randomforest/test_rgbd
 
-gprf: gp/gpc randomforest/rfc.o GP_RF.o GP_RF_test.o
-	${CC} gp/gpc.o randomforest/rfc.o GP_RF.o GP_RF_test.o ${LIBS_GP} ${LIBS_OPENCV} -o gprf
+gprf: gp/gpc randomforest/rfc.o randomforest/get_leaf_nodes.o GP_RF.o GP_RF_test.o
+	${CC} gp/gpc.o randomforest/rfc.o randomforest/get_leaf_nodes.o GP_RF.o GP_RF_test.o ${LIBS_GP} ${LIBS_OPENCV} -o gprf
 
 clean:
 	rm -f {dataset,gp,randomforest,.}/*.o
