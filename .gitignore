@@ -1,6 +1,17 @@
-*~
-*.csv
+# object files and statical libraries
+*.a
 *.o
+# temporary files from editors
 *#
+*~
+# data files
+*.csv
+# cmake helper files
+*.cmake
+CMakeFiles
+CMakeCache.txt
+# Makefiles (now automatically generated)
+Makefile
+# eclipse project files
 .cproject
 .project
