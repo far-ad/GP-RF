@@ -63,6 +63,7 @@ void RFC::train(double* training_labels_d, double* training_data_d, int n_sample
     rtree = new CvRTrees;
     rtree->train(training_data, CV_ROW_SAMPLE, training_labels,
 		 cv::Mat(), cv::Mat(), var_type, cv::Mat(), params);
+
 }
 
 
@@ -88,7 +89,7 @@ leaf_map* RFC::split_data_by_leafs(double* training_data_d, int n_samples)
 
 		    int* sampleIndices = new int[ cl->sample_count ];
 		    training_data->get_sample_indices(cl, sampleIndices);
-
+		   
 		    list<int> indices_list;
 		    for(int i=0; i < cl->sample_count; i++)
 			{
@@ -101,18 +102,3 @@ leaf_map* RFC::split_data_by_leafs(double* training_data_d, int n_samples)
 	}
     return leafs_indices_map;
 }
-
-std::list<CvDTreeNode*>& RFC::get_leaf_list(double* testing_data_d, int n_samples)
-{
-    cv::Mat testing_data = dvec2dataMat(testing_data_d, n_samples);
-
-    std::list<CvDTreeNode*>* leaf_list = new std::list<CvDTreeNode*>;
-    for (int i = 0; i < NUMBER_OF_TREES; i++)
-	{
-	    CvForestTree* tree = rtree->get_tree(i);
-	    CvDTreeNode* leaf_node = tree->predict(testing_data, cv::Mat());
-	    leaf_list->push_front(leaf_node);
-	}
-    return *leaf_list;
-}
-
